@@ -56,14 +56,26 @@ $^3$ \\[-6pt]
 
 
 \section{Introduction}
-Lyme disease is a highly emerging vector-borne disease in North America, which is caused by the bacterium Borrelia and transmitted via infected bites of black-legged ticks (Ixodes) \citep{govcan}. The risk of disease is further propagated by the changes in migratory patterns northward of these host ticks by climate change. 
+Lyme disease is a highly emerging vector-borne disease in North America, which is caused by the bacterium \textit{Borrelia} and transmitted via infected bites of black-legged ticks (\textit{Ixodes}) \citep{govcan}. The risk of disease is further propagated by the changes in migratory patterns northward of these host ticks by climate change. 
 
+- define questing lol
+
+\begin{figure}
+    \centering
+    \includegraphics{}
+    \caption{Caption}
+    \label{fig:enter-label}
+\end{figure}
 
 \section{Methods}
 
 \subsection{Proposed Model}
-The model proposed by \citep{lou2014impact} describes the tick life cycle and disease transmission between the tick and its hosts. The model features fifteen compartments, thirteen of which represent the various stages of the tick life cycle, including healthy ticks and infected ticks. 
-Ticks feed on their hosts in the
+The model proposed by \citet{lou2014impact} describes the tick life cycle and disease transmission between the tick and its hosts. The model features fifteen compartments, thirteen of which represent the various stages of the tick life cycle, including healthy ticks and infected ticks. We will base our analysis on this model, adding an intervention to prevent Lyme disease spread, and simplify certain aspects of the model. 
+
+Ticks feed on their hosts in the larva, nymph, and adult stages of the life cycle, but only pose a risk to humans in the late larval and early-to-mid nymph stage. During the larval stage, ticks will feel on small rodents, at which point they risk acquiring Lyme disease-causing bacteria \sophie{cite}. Nymphs and adults feed on their hosts at different rates, which is why the model features different feeding rates for each of these stages.
+At each stage of the tick life cycle, we feature a mortality rate based on the values listed in \citet{lou2014impact}, which were found in previous publications. 
+
+To avoid including unnecessary model complexity, we removed the time-dependent nature of the model 
 
 \sophie{Lauren/whoever insert compartmental diagram here}
 
