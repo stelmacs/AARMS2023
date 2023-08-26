@@ -1,0 +1,113 @@
+---
+title: "lyme project"
+output: html_document
+date: "2023-08-26"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Following this paper: https://doi.org/10.1016/j.ecocom.2013.11.003
+
+```{r}
+require(deSolve)
+
+mod1=function(t, y, parms){
+  #Pull state variables from y vector
+  L = y[1]
+  N = y[2]
+  A = y[3]
+  Mi = y[4]
+  Ni = y[5]
+  Ai = y[6]
+  
+    #Pull the required parameter values from the parms vector
+  M=parms["M"]
+  D=parms["D"]
+  f_a=parms["f_a"]
+  f_l=parms["f_l"]
+  f_n=parms["f_n"]
+  b=parms["b"]
+  K=parms["K"]
+  mu_l=parms["mu_l"]
+  mu_n=parms["mu_n"]
+  mu_a=parms["mu_a"]
+  mu_m=parms["mu_m"]
+  beta_m=parms["beta_m"]
+  beta_l=parms["betal"]
+  beta_n=parms["beta_n"]
+  
+  dL = (b*f_a - 1/K*A)*A - (f_l + mu_l)*L
+  dN = f_l*L - (mu_n + f_n)*N
+  dA = f_n*N - mu_a*A
+  dMi = beta_m*f_n*((M - Mi)/M)*N - mu_m*Mi
+  dNi = beta_l*f_l*(Mi/M)*L - (f_n + mu_n)*Ni
+  dAi = f_n*Ni + beta_n*f_n*(N - Ni)*(Mi/M) - mu_a*Ai
+  
+  res=c(dL, dN, dA, dMi, dNi, dAi)
+  list(res)
+}
+
+r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
+```
+
+```{r}
+times  = seq(0, 10000, by=1)
+
+parms= c(M=100,
+  D=50,
+  f_a=0.0006*100,
+  f_l=0.0006*100,
+  f_n=0.002*100,
+  b=600,
+  K=100,
+  mu_l=0.7,
+  mu_n=0.8,
+  mu_m=0.2,
+  mu_a=1,
+  beta_m=0.3,
+  beta_l=0.6,
+  beta_n=0.6)
+  
+start = c(L=1000, N=1000, A=1000, Mi=200, Ni=100, Ai=100)
+```
+
+```{r}
+out = ode(y = start, times = times, func = mod1, 
+     parms = parms)
+out=as.data.frame(out)
+head(round(out, 3))
+```
+```{r}
+plot(x = out$time, y = out$L, col = "black", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 50), ylim = c(0,600))
+ lines(x = out$time, y = out$L, col = "yellow")
+ lines(x = out$time, y = out$N, col = "red")
+ lines(x = out$time, y = out$A, col = "purple")
+ lines(x = out$time, y = out$Mi, col = "magenta")
+ lines(x = out$time, y = out$Ni, col = "pink")
+ lines(x = out$time, y = out$Ai, col = "orange")
+
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
+
+```{r}
+D=50
+  f_a=0.0006*100
+  f_l=0.0006*100
+  f_n=0.002*100
+  b=600
+  K=100
+  mu_l=0.7
+  mu_n=0.8
+  mu_m=0.2
+  mu_a=1
+  beta_m=0.3
+  beta_l=0.6
+  beta_n=0.6
+
+r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
+plot(r_tick)
+```
