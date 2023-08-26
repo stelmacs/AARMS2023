@@ -36,7 +36,7 @@ seirmod=function(t, y, parms){
   
   mu_e=parms["mu_e"]
   mu_ql=parms["mu_ql"]
-  mu_fl=parms["p_1"]
+  mu_fl=parms["mu_fl"]
   mu_qn=parms["mu_qn"]
   mu_fn=parms["mu_fn"]
   mu_qa=parms["mu_qa"]
@@ -68,23 +68,23 @@ seirmod=function(t, y, parms){
   
   #Define the equations (use what you wrote out in question 1) - 6 points
   dE = b*(A_FS + A_FI) - (mu_e * E) - (d_e*E)
-  dL_Q = (d_e * E) - (mu_ql * L_Q) - (f_l * L_Q) - (1/128 * L_Q)
-  dL_FS = ((1 - ((beta_h1l * (H_1I / (h_1 + (p_1*h_2)))) + (beta_h2l * ((p_1 * H_2I) / (h_1 + (p_1*h_2)))))) * (f_l * L_Q)) - (1/128 * L_FS)
+  dL_Q = (d_e * E) - (mu_ql * L_Q) - (f_l * L_Q)
+  dL_FS = ((1 - ((beta_h1l * (H_1I / (h_1 + (p_1*h_2)))) + (beta_h2l * ((p_1 * H_2I) / (h_1 + (p_1*h_2)))))) * (f_l * L_Q))
           - (mu_fl * L_FS) - (d_l * (L_FS + L_FI) * L_FS) - (d_l * L_FS)
-  dL_FI = (((beta_h1l * (H_1I / (h_1 + (p_1*h_2)))) + (beta_h2l * ((p_1 * H_2I) / (h_1 + (p_1*h_2))))) * (f_l * L_Q)) - (1/128 * L_FI)
+  dL_FI = (((beta_h1l * (H_1I / (h_1 + (p_1*h_2)))) + (beta_h2l * ((p_1 * H_2I) / (h_1 + (p_1*h_2))))) * (f_l * L_Q))
           - (mu_fl * L_FI) - (d_l * (L_FS + L_FI) * L_FI) - (d_l * L_FI)
-  dN_QS = (d_l * L_FS) - (mu_qn * N_QS) - (f_n * N_QS) - (1/128 * N_QS)
-  dN_QI = (d_l * L_FI) - (mu_qn * N_QI) - (f_n * N_QI) - (1/128 * N_QI)
-  dN_FS = ((1 - ((beta_h1n * (H_1I / (h_1 + (p_2*h_2)))) + (beta_h2n * ((p_2 * H_2I) / (h_1 + (p_2*h_2)))))) * (f_n * N_QS)) - (1/128 * N_FS)
+  dN_QS = (d_l * L_FS) - (mu_qn * N_QS) - (f_n * N_QS)
+  dN_QI = (d_l * L_FI) - (mu_qn * N_QI) - (f_n * N_QI)
+  dN_FS = ((1 - ((beta_h1n * (H_1I / (h_1 + (p_2*h_2)))) + (beta_h2n * ((p_2 * H_2I) / (h_1 + (p_2*h_2)))))) * (f_n * N_QS))
           - (mu_fn * N_FS) - (d_n * (N_FS + N_FI) * N_FS) - (d_n * N_FS)
-  dN_FI = (f_n * N_QI) + (((beta_h1n * (H_1I / (h_1 + (p_2*h_2)))) + (beta_h2n * ((p_2 * H_2I) / (h_1 + (p_2*h_2))))) * (f_n * N_QS)) - (1/128 * N_FI)
+  dN_FI = (f_n * N_QI) + (((beta_h1n * (H_1I / (h_1 + (p_2*h_2)))) + (beta_h2n * ((p_2 * H_2I) / (h_1 + (p_2*h_2))))) * (f_n * N_QS))
           - (mu_fn * N_FI) - (d_n * (N_FS + N_FI) * N_FI) - (d_n * N_FI)
-  dA_QS = (d_n * N_FS) - (mu_qa * A_QS) - (f_a * A_QS) - (1/128 * A_QS)
-  dA_QI = (d_n * N_FI) - (mu_qa * A_QI) - (f_a * A_QI) - (1/128 * A_QI)
-  dA_FS = (f_a * A_QS) - (mu_fa * A_FS) - (d_a * (A_FS + A_FI) * A_FS) - (1/128 * A_FS)
-  dA_FI = (f_a * A_QI) - (mu_fa * A_FI) - (d_a * (A_FS + A_FI) * A_FI) - (1/128 * A_FI)
-  dH_1I = (f_n * beta_nh1 * N_QI * ((h_1 - H_1I) / (h_1 + (p_2 * h_2)))) - (mu_h1 * H_1I) - (1/128 * H_1I)
-  dH_2I = (f_n * beta_nh2 * N_QI * ((p_2 * (h_2 - H_2I)) / (h_1 + (p_2 * h_2)))) - (mu_h2 * H_2I) - (1/128 * H_2I)
+  dA_QS = (d_n * N_FS) - (mu_qa * A_QS) - (f_a * A_QS)
+  dA_QI = (d_n * N_FI) - (mu_qa * A_QI) - (f_a * A_QI)
+  dA_FS = (f_a * A_QS) - (mu_fa * A_FS) - (d_a * (A_FS + A_FI) * A_FS)
+  dA_FI = (f_a * A_QI) - (mu_fa * A_FI) - (d_a * (A_FS + A_FI) * A_FI)
+  dH_1I = (f_n * beta_nh1 * N_QI * ((h_1 - H_1I) / (h_1 + (p_2 * h_2)))) - (mu_h1 * H_1I)
+  dH_2I = (f_n * beta_nh2 * N_QI * ((p_2 * (h_2 - H_2I)) / (h_1 + (p_2 * h_2)))) - (mu_h2 * H_2I)
   
   res=c(dE, dL_Q, dL_FS, dL_FI, dN_QS, dN_QI, dN_FS, dN_FI, dA_QS, dA_QI, dA_FS, dA_FI, dH_1I, dH_2I)
   #Return list of gradients
@@ -115,7 +115,7 @@ seirmod2=function(t, y, parms){
   
   mu_e=parms["mu_e"]
   mu_ql=parms["mu_ql"]
-  mu_fl=parms["p_1"]
+  mu_fl=parms["mu_fl"]
   mu_qn=parms["mu_qn"]
   mu_fn=parms["mu_fn"]
   mu_qa=parms["mu_qa"]
@@ -168,35 +168,106 @@ seirmod2=function(t, y, parms){
 ```
 
 
+EVEN MORE SQUISHED SOLUTION WITH NO INFECTED STATS:
+```{r}
+require(deSolve)
+
+seirmod3=function(t, y, parms){
+  #Pull state variables from y vector
+  E = y[1]
+  L_Q = y[2]
+  L_F = y[3]
+  N_Q = y[4]
+  N_F = y[5]
+  A_Q = y[6]
+  A_F = y[7]
+  
+  #Pull the required parameter values from the parms vector
+  b=parms["b"]
+  
+  mu_e=parms["mu_e"]
+  mu_ql=parms["mu_ql"]
+  mu_fl=parms["mu_fl"]
+  mu_qn=parms["mu_qn"]
+  mu_fn=parms["mu_fn"]
+  mu_qa=parms["mu_qa"]
+  mu_fa=parms["mu_fa"]
+  
+  d_e=parms["d_e"]
+  d_n=parms["d_n"]
+  d_l=parms["d_l"]
+  
+  f_l=parms["f_l"]
+  f_n=parms["f_n"]
+  f_a=parms["f_a"]
+  
+  #Define the equations (use what you wrote out in question 1) - 6 points
+  dE = (b * A_F) - ((mu_e + d_e) * E)
+  dL_Q = (d_e * E) - ((mu_ql + f_l) * L_Q)
+  dL_F = (f_l * L_Q) - ((mu_fl + d_l) * L_F)
+  dN_Q = (d_l * L_F) - ((mu_qn + f_n) * N_Q)
+  dN_F = (f_n * N_Q) - ((mu_fn + d_n) * N_F)
+  dA_Q = (d_n * N_F) - ((mu_qa + f_a) * A_Q)
+  dA_F = (f_a * A_Q) - (mu_fa * A_F)
+  
+  res=c(dE, dL_Q, dL_F, dN_Q, dN_F, dA_Q, dA_F)
+  #Return list of gradients
+  list(res)
+}
+
+```
+
+
+```{r}
+times  = seq(0, 100000, by=1)
+parms  = c(b=50, mu_e=0.0025, mu_ql=0.006, mu_fl=0.038, mu_qn=0.006, mu_fn=0.028, mu_qa=0.006, mu_fa=0.018, mu_h1=0.012, mu_h2=0.012, d_e=0.01, d_a=0.0000542, d_n=0.0000015486, d_l=0.0000015486, f_l=0.09, f_n=0.3, f_a=0.2, beta_h1l=0.6, beta_h2l=0.6, beta_h1n=0.8, beta_h2n=0.8, beta_nh1=1, beta_nh2=1, h_1=200, h_2=500, p_1=1, p_2=1)
+start = c(E=500, L_Q = 500, L_FS = 500, L_FI = 500, N_QS = 500, N_QI = 500, N_FS = 500, N_FI = 500, A_QS=500, A_QI=500, A_FS=500, A_FI=500, H_1I = 500, H_2I = 500)
+```
+
+ALT MODEL:
 ```{r}
 times  = seq(0, 10000, by=1)
-parms  = c(b=50, mu_e=0.0025, mu_ql=0.006, mu_fl=0.038, mu_qn=0.006, mu_fn=0.028, mu_qa=0.006, mu_fa=0.018, mu_h1=0.012, mu_h2=0.012, d_e=0.01, d_a=0.0001, d_n=0.0001, d_l=0.001, f_l=0.09, f_n=0.3, f_a=0.2, beta_h1l=0.6, beta_h2l=0.6, beta_h1n=0.8, beta_h2n=0.8, beta_nh1=1, beta_nh2=1, h_1=200, h_2=500, p_1=1, p_2=1)
-start = c(L_Q = 500, L_FS = 500, L_FI = 500, N_QS = 500, N_QI = 500, N_FS = 500, N_FI = 500, H_1I = 500, H_2I = 500)
+parms  = c(b=50, mu_e=0.0025, mu_ql=0.006, mu_fl=0.038, mu_qn=0.006, mu_fn=0.028, mu_qa=0.006, mu_fa=0.018, d_e=0.01, d_n=0.0000015486, d_l=0.0000015486, f_l=0.09, f_n=0.3, f_a=0.2)
+start = c(E=1000, L_Q = 1000, L_F = 1000, N_Q = 1000, N_F = 1000, A_Q=1000, A_F=1000)
 ```
 
 ```{r}
-out = ode(y = start, times = times, func = seirmod2, 
+out = ode(y = start, times = times, func = seirmod, 
      parms = parms)
 out=as.data.frame(out)
 head(round(out, 3))
 ```
 
 ```{r}
-plot(x = out$time, y = out$L_Q, col = "black", ylab = "Number of individuals", 
-      xlab = "Time (days)", type = "l", xlim = c(0, 10000), ylim = c(0,100000))
-# lines(x = out$time, y = out$L_Q, col = "yellow")
+plot(x = out$time, y = out$E, col = "black", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 100000), ylim = c(0,100000))
+ lines(x = out$time, y = out$L_Q, col = "yellow")
  lines(x = out$time, y = out$L_FS, col = "red")
  lines(x = out$time, y = out$L_FI, col = "purple")
  lines(x = out$time, y = out$N_QS, col = "magenta")
  lines(x = out$time, y = out$N_QI, col = "pink")
  lines(x = out$time, y = out$N_FS, col = "maroon")
  lines(x = out$time, y = out$N_FI, col = "orange")
-# lines(x = out$time, y = out$A_QS, col = "cornflowerblue")
-# lines(x = out$time, y = out$A_QI, col = "darkgoldenrod")
-# lines(x = out$time, y = out$A_FS, col = "darkolivegreen3")
-# lines(x = out$time, y = out$A_FI, col = "darkorchid4")
+ lines(x = out$time, y = out$A_QS, col = "cornflowerblue")
+ lines(x = out$time, y = out$A_QI, col = "darkgoldenrod")
+ lines(x = out$time, y = out$A_FS, col = "darkolivegreen3")
+ lines(x = out$time, y = out$A_FI, col = "darkorchid4")
  lines(x = out$time, y = out$H_1I, col = "green")
  lines(x = out$time, y = out$H_2I, col = "blue")
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
+
+PLOT 2:
+```{r}
+plot(x = out$time, y = out$E, col = "black", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 10000), ylim = c(0,1000))
+ lines(x = out$time, y = out$L_Q, col = "yellow")
+ lines(x = out$time, y = out$L_F, col = "red")
+ lines(x = out$time, y = out$N_Q, col = "magenta")
+ lines(x = out$time, y = out$N_F, col = "maroon")
+ lines(x = out$time, y = out$A_Q, col = "cornflowerblue")
+ lines(x = out$time, y = out$A_F, col = "darkolivegreen3")
 #note that this figure is generated using simple plotting and not ggplot. 
 #ggplot is a great R tool for plotting that you might want to look into. 
 ```
