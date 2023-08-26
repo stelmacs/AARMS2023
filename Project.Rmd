@@ -1,0 +1,202 @@
+---
+title: "Lyme Disease Project"
+author: "Bruce"
+date: "2023-08-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+I tried fiddling with the birth rate parameter and added in my own "death rates". No matter what, it seems to go off to infinity, idk what's goin on playa!!! (also added a "squished version" where the same thing is happening)
+```{r}
+require(deSolve)
+
+seirmod=function(t, y, parms){
+  #Pull state variables from y vector
+  E = y[1]
+  L_Q = y[2]
+  L_FS = y[3]
+  L_FI = y[4]
+  N_QS = y[5]
+  N_QI = y[6]
+  N_FS = y[7]
+  N_FI = y[8]
+  A_QS = y[9]
+  A_QI = y[10]
+  A_FS = y[11]
+  A_FI = y[12]
+  H_1I = y[13]
+  H_2I = y[14]
+  
+  #Pull the required parameter values from the parms vector
+  b=parms["b"]
+  
+  mu_e=parms["mu_e"]
+  mu_ql=parms["mu_ql"]
+  mu_fl=parms["p_1"]
+  mu_qn=parms["mu_qn"]
+  mu_fn=parms["mu_fn"]
+  mu_qa=parms["mu_qa"]
+  mu_fa=parms["mu_fa"]
+  mu_h1=parms["mu_h1"]
+  mu_h2=parms["mu_h2"]
+  
+  d_e=parms["d_e"]
+  d_a=parms["d_a"]
+  d_n=parms["d_n"]
+  d_l=parms["d_l"]
+  
+  f_l=parms["f_l"]
+  f_n=parms["f_n"]
+  f_a=parms["f_a"]
+  
+  beta_h1l=parms["beta_h1l"]
+  beta_h2l=parms["beta_h2l"]
+  beta_h1n=parms["beta_h1n"]
+  beta_h2n=parms["beta_h2n"]
+  beta_nh1=parms["beta_nh1"]
+  beta_nh2=parms["beta_nh2"]
+  
+  h_1=parms["h_1"]
+  h_2=parms["h_2"]
+  
+  p_1=parms["p_1"]
+  p_2=parms["p_2"]
+  
+  #Define the equations (use what you wrote out in question 1) - 6 points
+  dE = b*(A_FS + A_FI) - (mu_e * E) - (d_e*E)
+  dL_Q = (d_e * E) - (mu_ql * L_Q) - (f_l * L_Q) - (1/128 * L_Q)
+  dL_FS = ((1 - ((beta_h1l * (H_1I / (h_1 + (p_1*h_2)))) + (beta_h2l * ((p_1 * H_2I) / (h_1 + (p_1*h_2)))))) * (f_l * L_Q)) - (1/128 * L_FS)
+          - (mu_fl * L_FS) - (d_l * (L_FS + L_FI) * L_FS) - (d_l * L_FS)
+  dL_FI = (((beta_h1l * (H_1I / (h_1 + (p_1*h_2)))) + (beta_h2l * ((p_1 * H_2I) / (h_1 + (p_1*h_2))))) * (f_l * L_Q)) - (1/128 * L_FI)
+          - (mu_fl * L_FI) - (d_l * (L_FS + L_FI) * L_FI) - (d_l * L_FI)
+  dN_QS = (d_l * L_FS) - (mu_qn * N_QS) - (f_n * N_QS) - (1/128 * N_QS)
+  dN_QI = (d_l * L_FI) - (mu_qn * N_QI) - (f_n * N_QI) - (1/128 * N_QI)
+  dN_FS = ((1 - ((beta_h1n * (H_1I / (h_1 + (p_2*h_2)))) + (beta_h2n * ((p_2 * H_2I) / (h_1 + (p_2*h_2)))))) * (f_n * N_QS)) - (1/128 * N_FS)
+          - (mu_fn * N_FS) - (d_n * (N_FS + N_FI) * N_FS) - (d_n * N_FS)
+  dN_FI = (f_n * N_QI) + (((beta_h1n * (H_1I / (h_1 + (p_2*h_2)))) + (beta_h2n * ((p_2 * H_2I) / (h_1 + (p_2*h_2))))) * (f_n * N_QS)) - (1/128 * N_FI)
+          - (mu_fn * N_FI) - (d_n * (N_FS + N_FI) * N_FI) - (d_n * N_FI)
+  dA_QS = (d_n * N_FS) - (mu_qa * A_QS) - (f_a * A_QS) - (1/128 * A_QS)
+  dA_QI = (d_n * N_FI) - (mu_qa * A_QI) - (f_a * A_QI) - (1/128 * A_QI)
+  dA_FS = (f_a * A_QS) - (mu_fa * A_FS) - (d_a * (A_FS + A_FI) * A_FS) - (1/128 * A_FS)
+  dA_FI = (f_a * A_QI) - (mu_fa * A_FI) - (d_a * (A_FS + A_FI) * A_FI) - (1/128 * A_FI)
+  dH_1I = (f_n * beta_nh1 * N_QI * ((h_1 - H_1I) / (h_1 + (p_2 * h_2)))) - (mu_h1 * H_1I) - (1/128 * H_1I)
+  dH_2I = (f_n * beta_nh2 * N_QI * ((p_2 * (h_2 - H_2I)) / (h_1 + (p_2 * h_2)))) - (mu_h2 * H_2I) - (1/128 * H_2I)
+  
+  res=c(dE, dL_Q, dL_FS, dL_FI, dN_QS, dN_QI, dN_FS, dN_FI, dA_QS, dA_QI, dA_FS, dA_FI, dH_1I, dH_2I)
+  #Return list of gradients
+  list(res)
+}
+
+```
+
+
+SQUISHED SOLUTION:
+```{r}
+require(deSolve)
+
+seirmod2=function(t, y, parms){
+  #Pull state variables from y vector
+  L_Q = y[1]
+  L_FS = y[2]
+  L_FI = y[3]
+  N_QS = y[4]
+  N_QI = y[5]
+  N_FS = y[6]
+  N_FI = y[7]
+  H_1I = y[8]
+  H_2I = y[9]
+  
+  #Pull the required parameter values from the parms vector
+  b=parms["b"]
+  
+  mu_e=parms["mu_e"]
+  mu_ql=parms["mu_ql"]
+  mu_fl=parms["p_1"]
+  mu_qn=parms["mu_qn"]
+  mu_fn=parms["mu_fn"]
+  mu_qa=parms["mu_qa"]
+  mu_fa=parms["mu_fa"]
+  mu_h1=parms["mu_h1"]
+  mu_h2=parms["mu_h2"]
+  
+  d_e=parms["d_e"]
+  d_a=parms["d_a"]
+  d_n=parms["d_n"]
+  d_l=parms["d_l"]
+  
+  f_l=parms["f_l"]
+  f_n=parms["f_n"]
+  f_a=parms["f_a"]
+  
+  beta_h1l=parms["beta_h1l"]
+  beta_h2l=parms["beta_h2l"]
+  beta_h1n=parms["beta_h1n"]
+  beta_h2n=parms["beta_h2n"]
+  beta_nh1=parms["beta_nh1"]
+  beta_nh2=parms["beta_nh2"]
+  
+  h_1=parms["h_1"]
+  h_2=parms["h_2"]
+  
+  p_1=parms["p_1"]
+  p_2=parms["p_2"]
+  
+  #Define the equations (use what you wrote out in question 1) - 6 points
+  dL_Q = b*(N_FS + N_FI) - (mu_e * L_Q) - (mu_ql * L_Q) - (f_l * L_Q) - (10 * L_Q)
+  dL_FS = ((1 - ((beta_h1l * (H_1I / (h_1 + (p_1*h_2)))) + (beta_h2l * ((p_1 * H_2I) / (h_1 + (p_1*h_2)))))) * (f_l * L_Q))
+          - (mu_fl * L_FS) - (d_l * (L_FS + L_FI) * L_FS) - (d_l * L_FS) - (10 * L_FS)
+  dL_FI = (((beta_h1l * (H_1I / (h_1 + (p_1*h_2)))) + (beta_h2l * ((p_1 * H_2I) / (h_1 + (p_1*h_2))))) * (f_l * L_Q))
+          - (mu_fl * L_FI) - (d_l * (L_FS + L_FI) * L_FI) - (d_l * L_FI) - (10 * L_FI)
+  dN_QS = (d_l * L_FS) - (mu_qn * N_QS) - (f_n * N_QS) - (10 * N_QS)
+  dN_QI = (d_l * L_FI) - (mu_qn * N_QI) - (f_n * N_QI) - (10 * N_QI)
+  dN_FS = ((1 - ((beta_h1n * (H_1I / (h_1 + (p_2*h_2)))) + (beta_h2n * ((p_2 * H_2I) / (h_1 + (p_2*h_2)))))) * (f_n * N_QS))
+          - (mu_fn * N_FS) - (d_n * (N_FS + N_FI) * N_FS) - (d_n * N_FS) - (10 * N_FS) 
+  dN_FI = (f_n * N_QI) + (((beta_h1n * (H_1I / (h_1 + (p_2*h_2)))) + (beta_h2n * ((p_2 * H_2I) / (h_1 + (p_2*h_2))))) * (f_n * N_QS))
+          - (mu_fn * N_FI) - (d_n * (N_FS + N_FI) * N_FI) - (d_n * N_FI) - (10 * N_FI)
+  dH_1I = (f_n * beta_nh1 * N_QI * ((h_1 - H_1I) / (h_1 + (p_2 * h_2)))) - (mu_h1 * H_1I)
+  dH_2I = (f_n * beta_nh2 * N_QI * ((p_2 * (h_2 - H_2I)) / (h_1 + (p_2 * h_2)))) - (mu_h2 * H_2I)
+  
+  res=c(dL_Q, dL_FS, dL_FI, dN_QS, dN_QI, dN_FS, dN_FI, dH_1I, dH_2I)
+  #Return list of gradients
+  list(res)
+}
+
+```
+
+
+```{r}
+times  = seq(0, 10000, by=1)
+parms  = c(b=50, mu_e=0.0025, mu_ql=0.006, mu_fl=0.038, mu_qn=0.006, mu_fn=0.028, mu_qa=0.006, mu_fa=0.018, mu_h1=0.012, mu_h2=0.012, d_e=0.01, d_a=0.0001, d_n=0.0001, d_l=0.001, f_l=0.09, f_n=0.3, f_a=0.2, beta_h1l=0.6, beta_h2l=0.6, beta_h1n=0.8, beta_h2n=0.8, beta_nh1=1, beta_nh2=1, h_1=200, h_2=500, p_1=1, p_2=1)
+start = c(L_Q = 500, L_FS = 500, L_FI = 500, N_QS = 500, N_QI = 500, N_FS = 500, N_FI = 500, H_1I = 500, H_2I = 500)
+```
+
+```{r}
+out = ode(y = start, times = times, func = seirmod2, 
+     parms = parms)
+out=as.data.frame(out)
+head(round(out, 3))
+```
+
+```{r}
+plot(x = out$time, y = out$L_Q, col = "black", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 10000), ylim = c(0,100000))
+# lines(x = out$time, y = out$L_Q, col = "yellow")
+ lines(x = out$time, y = out$L_FS, col = "red")
+ lines(x = out$time, y = out$L_FI, col = "purple")
+ lines(x = out$time, y = out$N_QS, col = "magenta")
+ lines(x = out$time, y = out$N_QI, col = "pink")
+ lines(x = out$time, y = out$N_FS, col = "maroon")
+ lines(x = out$time, y = out$N_FI, col = "orange")
+# lines(x = out$time, y = out$A_QS, col = "cornflowerblue")
+# lines(x = out$time, y = out$A_QI, col = "darkgoldenrod")
+# lines(x = out$time, y = out$A_FS, col = "darkolivegreen3")
+# lines(x = out$time, y = out$A_FI, col = "darkorchid4")
+ lines(x = out$time, y = out$H_1I, col = "green")
+ lines(x = out$time, y = out$H_2I, col = "blue")
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
