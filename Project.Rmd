@@ -202,7 +202,7 @@ seirmod3=function(t, y, parms){
   f_a=parms["f_a"]
   
   #Define the equations (use what you wrote out in question 1) - 6 points
-  dE = (b * A_F) - ((mu_e + d_e) * E)
+  dE = (b/A_F * A_F) - ((mu_e + d_e) * E)
   dL_Q = (d_e * E) - ((mu_ql + f_l) * L_Q)
   dL_F = (f_l * L_Q) - ((mu_fl + d_l) * L_F)
   dN_Q = (d_l * L_F) - ((mu_qn + f_n) * N_Q)
@@ -219,20 +219,20 @@ seirmod3=function(t, y, parms){
 
 
 ```{r}
-times  = seq(0, 100000, by=1)
-parms  = c(b=50, mu_e=0.0025, mu_ql=0.006, mu_fl=0.038, mu_qn=0.006, mu_fn=0.028, mu_qa=0.006, mu_fa=0.018, mu_h1=0.012, mu_h2=0.012, d_e=0.01, d_a=0.0000542, d_n=0.0000015486, d_l=0.0000015486, f_l=0.09, f_n=0.3, f_a=0.2, beta_h1l=0.6, beta_h2l=0.6, beta_h1n=0.8, beta_h2n=0.8, beta_nh1=1, beta_nh2=1, h_1=200, h_2=500, p_1=1, p_2=1)
+times  = seq(0, 10000, by=1)
+parms  = c(b=50, mu_e=0.0025, mu_ql=0.006, mu_fl=0.038, mu_qn=0.006, mu_fn=0.028, mu_qa=0.006, mu_fa=0.018, mu_h1=0.012, mu_h2=0.012, d_e=0.01, d_a=0.01, d_n=0.01, d_l=0.01, f_l=0.09, f_n=0.3, f_a=0.2, beta_h1l=0.6, beta_h2l=0.6, beta_h1n=0.8, beta_h2n=0.8, beta_nh1=1, beta_nh2=1, h_1=200, h_2=500, p_1=1, p_2=1)
 start = c(E=500, L_Q = 500, L_FS = 500, L_FI = 500, N_QS = 500, N_QI = 500, N_FS = 500, N_FI = 500, A_QS=500, A_QI=500, A_FS=500, A_FI=500, H_1I = 500, H_2I = 500)
 ```
 
 ALT MODEL:
 ```{r}
 times  = seq(0, 10000, by=1)
-parms  = c(b=50, mu_e=0.0025, mu_ql=0.006, mu_fl=0.038, mu_qn=0.006, mu_fn=0.028, mu_qa=0.006, mu_fa=0.018, d_e=0.01, d_n=0.0000015486, d_l=0.0000015486, f_l=0.09, f_n=0.3, f_a=0.2)
+parms  = c(b=50, mu_e=0.0025, mu_ql=0.006, mu_fl=0.038, mu_qn=0.006, mu_fn=0.028, mu_qa=0.006, mu_fa=0.018, d_e=0.01, d_n=0.01, d_l=0.01, f_l=0.09, f_n=0.3, f_a=0.2)
 start = c(E=1000, L_Q = 1000, L_F = 1000, N_Q = 1000, N_F = 1000, A_Q=1000, A_F=1000)
 ```
 
 ```{r}
-out = ode(y = start, times = times, func = seirmod, 
+out = ode(y = start, times = times, func = seirmod3, 
      parms = parms)
 out=as.data.frame(out)
 head(round(out, 3))
@@ -261,7 +261,7 @@ plot(x = out$time, y = out$E, col = "black", ylab = "Number of individuals",
 PLOT 2:
 ```{r}
 plot(x = out$time, y = out$E, col = "black", ylab = "Number of individuals", 
-      xlab = "Time (days)", type = "l", xlim = c(0, 10000), ylim = c(0,1000))
+      xlab = "Time (days)", type = "l", xlim = c(0, 1000), ylim = c(0,5000))
  lines(x = out$time, y = out$L_Q, col = "yellow")
  lines(x = out$time, y = out$L_F, col = "red")
  lines(x = out$time, y = out$N_Q, col = "magenta")
