@@ -54,7 +54,7 @@ r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
 
 testing value of r0 for different rodent population size:
 ```{r}
-R=25000 #total number of rodents
+R=10000 #total number of rodents
 D=50 #total number of deer
 #f_a=p1 #rate at which adult ticks attack deers
 #f_l=p2 #rate at whihc larval ticks attach on rodents
@@ -149,11 +149,20 @@ print(c("R0:",R_0))
 ```{r}
 times  = seq(0, 10000, by=1)
 
-parms= c(R=25000, #total number of rodents
+parms= c(R=10000, #total number of rodents
   D=50, #total number of deer
-  f_a=p1, #rate at which adult ticks attack deers
-  f_l=p2, #rate at whihc larval ticks attach on rodents
-  f_n=p3, #rate at which nymphal ticks bite rodents
+
+  # if you want it density dependent, leave 0.1, 0.5, 0.5; 
+  # if frequency dependent leave p1, p2, p3
+  
+  #f_a=p1, #rate at which adult ticks attack deers
+  #f_l=p2, #rate at whihc larval ticks attach on rodents
+  #f_n=p3, #rate at which nymphal ticks bite rodents
+  f_a= 0.1, #rate at which adult ticks attack deers
+  f_l= 0.5, #rate at whihc larval ticks attach on rodents
+  f_n= 0.5, #rate at which nymphal ticks bite rodents
+
+
   b=600, #larvae hatching per adult tick-deer interaction
   K=100, #scale of self regulation in tick reproduction
   mu_l=0.7, #larva death rate
@@ -164,7 +173,7 @@ parms= c(R=25000, #total number of rodents
   beta_l=0.6, #transmission rate to larval ticks
   beta_n=0.6) #transmission rate to nymphal ticks
   
-start = c(L=8000, N=10000, A=10000, Ri=3500, Ni=0.3*10000, Ai=0.5*10000)
+start = c(L=27000, N=10000, A=5000, Ri=3086, Ni=3981, Ai=3200) #start at eqiluilibria
 ```
 
 ```{r}
