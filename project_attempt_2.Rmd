@@ -35,7 +35,7 @@ mod1=function(t, y, parms){
   mu_a=parms["mu_a"]
   mu_r=parms["mu_r"]
   beta_r=parms["beta_r"]
-  beta_l=parms["betal"]
+  beta_l=parms["beta_l"]
   beta_n=parms["beta_n"]
   
   dL = (b*f_a - 1/K*A)*A - (f_l + mu_l)*L
