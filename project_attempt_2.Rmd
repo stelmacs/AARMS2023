@@ -86,16 +86,62 @@ f_n=p3 #rate at which nymphal ticks bite rodents
 # need R >= the eq below:
 
 min_rat_pop = (beta_r*beta_l*mu_a/mu_r)*K*(b*p3-(p1 + mu_l)*((mu_n+p2)/p1)*(mu_a/p2))
-print(c("Minimum rat population size:", min_rat_pop))
+#print(c("Minimum rat population size:", min_rat_pop))
 
 A_eq = K*(b*f_a - ((mu_n + f_n)/f_l)* (mu_a/f_n)*(f_l+mu_l))
-L_eq = (mu_n + f_n)/(f_l*(mu_a/(f_n*A_eq)))
-N_eq = mu_a/(f_n*A_eq)
+L_eq = (mu_n + f_n)/(f_l) * (mu_a/f_n)*A_eq
+N_eq = mu_a/f_n *A_eq
 
-print(c("A*:", A_eq, "L*:", L_eq, "N*:", N_eq))
+#print(c("A*:", A_eq, "L*:", L_eq, "N*:", N_eq))
 
 R_0 = sqrt((beta_r*beta_l*mu_a*A_eq)/(mu_r*R))
+#print(c("R0:",R_0))
+
+##### density-dependent seeking rate #####
+
+q1=0.0006
+q2=0.0006
+q3=0.002
+  
+f_l = q1*R
+f_n= q2*R
+f_a= q3*D
+
+r_tick_dens = b*q3*D* ((q1*R)/(q1*R + mu_l)) * ((q2*R)/(q2*R + mu_n)) * (1/mu_a)
+print(c("Rtick:",r_tick_dens))
+
+# require D > mu_a/(b*q3)
+
+min_deer_pop = mu_a/(b*q3)
+print(c("Min deer pop:", min_deer_pop))
+
+min_rodent_pop2 = (2*mu_l*(mu_n/(q1*q2)))/(-(mu_l/q1 + mu_n/q2) 
+                                           + sqrt((mu_l/q1 + mu_n/q2)^2 
+                                                  + 4*(mu_l*mu_n)/(q1*q2) * ((b*q3*D)/(mu_a)-1
+                                                                             )
+                                                  )
+                                           )
+                                           
+print(c("Minimum rodent pop:", min_rodent_pop2))
+
+A_eq2 = K*(b*q3 - ((mu_n + f_n)/f_l)* (mu_a/f_n)*(f_l+mu_l))
+L_eq2 = (mu_n + f_n)/(f_l) * (mu_a/f_n)*A_eq
+N_eq2 = mu_a/(f_n) * A_eq
+
+print(c("A*:", A_eq2, "L*:", L_eq2, "N*:", N_eq2))
+
+R_0 = (beta_r*beta_l*mu_a*K)/(mu_r) * 
+  ( (b*q3*D/R) - (mu_a/R)*
+      (1 + 
+         (mu_l/(q1*R))  
+       ) *
+      (1 + 
+         (mu_n/(q2*R))
+       )
+   )
+  
 print(c("R0:",R_0))
+
 ```
 
 
