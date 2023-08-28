@@ -22,7 +22,7 @@ mod1=function(t, y, parms){
   Ni = y[5]
   Ai = y[6]
   
-    #Pull the required parameter values from the parms vector
+  #Pull the required parameter values from the parms vector
   R=parms["R"]
   D=parms["D"]
   f_a=parms["f_a"]
@@ -49,7 +49,7 @@ mod1=function(t, y, parms){
   list(res)
 }
 
-r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
+#r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
 ```
 
 testing value of r0 for different rodent population size:
@@ -176,21 +176,124 @@ parms= c(R=10000, #total number of rodents
 start = c(L=27000, N=10000, A=5000, Ri=3086, Ni=3981, Ai=3200) #start at eqiluilibria
 ```
 
+VARYING PARAMETERS
 ```{r}
+times  = seq(0, 1000, by=1)
+
+R = rnorm(10, 10000, 10)
+D = rnorm(10, 50, 1)
+
+f_a = rnorm(10, 0.1, 0.001)
+f_l = rnorm(10, 0.5, 0.002)
+f_n = rnorm(10, 0.5, 0.002)
+
+b = rnorm(10, 600, 1)
+K = rnorm(10, 100, 0.1)
+mu_l = rnorm(10, 0.7, 0.002)
+mu_n = rnorm(10, 0.8, 0.002)
+mu_r = rnorm(10, 0.2, 0.002)
+mu_a = rep(1, 10)
+beta_r = rnorm(10, 0.3, 0.002)
+beta_l = rnorm(10, 0.6, 0.002)
+beta_n = rnorm(10, 0.6, 0.002)
+
+param_matrix = cbind(R, D, f_a, f_l, f_n, b, K, mu_l, mu_n, mu_r, mu_a, beta_r, beta_l, beta_n)
+param_matrix
+
+
+#parms= c(R=10000, #total number of rodents
+#  D=50, #total number of deer
+
+  # if you want it density dependent, leave 0.1, 0.5, 0.5; 
+  # if frequency dependent leave p1, p2, p3
+  
+  #f_a=p1, #rate at which adult ticks attack deers
+  #f_l=p2, #rate at whihc larval ticks attach on rodents
+  #f_n=p3, #rate at which nymphal ticks bite rodents
+#  f_a= 0.1, #rate at which adult ticks attack deers
+#  f_l= 0.5, #rate at whihc larval ticks attach on rodents
+#  f_n= 0.5, #rate at which nymphal ticks bite rodents
+
+
+#  b=600, #larvae hatching per adult tick-deer interaction
+#  K=100, #scale of self regulation in tick reproduction
+#  mu_l=0.7, #larva death rate
+#  mu_n=0.8, #nymph death rate
+#  mu_r=0.2, #rodent death rate
+#  mu_a=1, #adult death rate
+#  beta_r=0.3, #transmission rate to rodents
+#  beta_l=0.6, #transmission rate to larval ticks
+#  beta_n=0.6) #transmission rate to nymphal ticks
+  
+#start = c(L=27000, N=10000, A=5000, Ri=3086, Ni=3981, Ai=3200) #start at eqiluilibria
+
+```
+
+```{r}
+
 out = ode(y = start, times = times, func = mod1, 
-     parms = parms)
+          parms = param_matrix[1,])
 out=as.data.frame(out)
-head(round(out, 3))
+
+t = out$time
+max_L = out$L
+min_L = out$L
+max_N = out$N
+min_N = out$N
+max_A = out$A
+min_A = out$A
+max_Ri = out$Ri
+min_Ri = out$Ri
+max_Ni = out$Ni
+min_Ni = out$Ni
+max_Ai = out$Ai
+min_Ai = out$Ai
+
+stat_matrix = cbind(t, max_L, min_L, max_N, min_N, max_A, min_A, max_Ri, min_Ri, max_Ni, min_Ni, max_Ai, min_Ai)
+stat_matrix = as.data.frame(stat_matrix)
+
+for (i in 2:nrow(param_matrix)){
+  
+  out = ode(y = start, times = times, func = mod1, 
+            parms = param_matrix[i,])
+  out=as.data.frame(out)
+  
+  for (k in 1:nrow(out)){
+    stat_matrix$max_L[k] = max(out$L[k], stat_matrix$max_L[k])
+    stat_matrix$min_L[k] = min(out$L[k], stat_matrix$min_L[k])
+    stat_matrix$max_N[k] = max(out$N[k], stat_matrix$max_N[k])
+    stat_matrix$min_N[k] = min(out$N[k], stat_matrix$min_N[k])
+    stat_matrix$max_A[k] = max(out$A[k], stat_matrix$max_A[k])
+    stat_matrix$min_A[k] = min(out$A[k], stat_matrix$min_A[k])
+    stat_matrix$max_Ri[k] = max(out$Ri[k], stat_matrix$max_Ri[k])
+    stat_matrix$min_Ri[k] = min(out$Ri[k], stat_matrix$min_Ri[k])
+    stat_matrix$max_Ni[k] = max(out$Ni[k], stat_matrix$max_Ni[k])
+    stat_matrix$min_Ni[k] = min(out$Ni[k], stat_matrix$min_Ni[k])
+    stat_matrix$max_Ai[k] = max(out$Ai[k], stat_matrix$max_Ai[k])
+    stat_matrix$min_Ai[k] = min(out$Ai[k], stat_matrix$min_Ai[k])
+  }
+  
+}
+
+head(stat_matrix)
+
 ```
 ```{r}
-plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
-      xlab = "Time (days)", type = "l", xlim = c(0, 40), ylim = c(-1000,20000))
+plot(x = out$time, y = stat_matrix$min_L, col = "yellow", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 1000), ylim = c(0,30000))
  #lines(x = out$time, y = out$L, col = "yellow")
- lines(x = out$time, y = out$N, col = "red")
- lines(x = out$time, y = out$A, col = "purple")
- lines(x = out$time, y = out$Ri, col = "magenta")
- lines(x = out$time, y = out$Ni, col = "pink")
- lines(x = out$time, y = out$Ai, col = "orange")
+ lines(x = out$time, y = stat_matrix$min_N, col = "red")
+ lines(x = out$time, y = stat_matrix$min_A, col = "purple")
+ lines(x = out$time, y = stat_matrix$min_Ri, col = "magenta")
+ lines(x = out$time, y = stat_matrix$min_Ni, col = "pink")
+ lines(x = out$time, y = stat_matrix$min_Ai, col = "orange")
+ 
+ lines(x = out$time, y = stat_matrix$max_L, col = "yellow")
+ lines(x = out$time, y = stat_matrix$max_N, col = "red")
+ lines(x = out$time, y = stat_matrix$max_A, col = "purple")
+ lines(x = out$time, y = stat_matrix$max_Ri, col = "magenta")
+ lines(x = out$time, y = stat_matrix$max_Ni, col = "pink")
+ lines(x = out$time, y = stat_matrix$max_Ai, col = "orange")
 
 #note that this figure is generated using simple plotting and not ggplot. 
 #ggplot is a great R tool for plotting that you might want to look into. 
