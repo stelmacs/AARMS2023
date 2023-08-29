@@ -1,0 +1,315 @@
+---
+title: "lyme project"
+output: html_document
+date: "2023-08-26"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Following this paper: https://doi.org/10.1016/j.ecocom.2013.11.003
+
+```{r}
+require(deSolve)
+
+mod1=function(t, y, parms){
+  #Pull state variables from y vector
+  L = y[1]
+  N = y[2]
+  A = y[3]
+  Ri = y[4]
+  Ni = y[5]
+  Ai = y[6]
+  
+    #Pull the required parameter values from the parms vector
+  R=parms["R"]
+  D=parms["D"]
+  f_a=parms["f_a"]
+  f_l=parms["f_l"]
+  f_n=parms["f_n"]
+  b=parms["b"]
+  K=parms["K"]
+  mu_l=parms["mu_l"]
+  mu_n=parms["mu_n"]
+  mu_a=parms["mu_a"]
+  mu_r=parms["mu_r"]
+  beta_r=parms["beta_r"]
+  beta_l=parms["beta_l"]
+  beta_n=parms["beta_n"]
+  
+  dL = (b*f_a - 1/K*A)*A - (f_l + mu_l)*L
+  dN = f_l*L - (mu_n + f_n)*N
+  dA = f_n*N - mu_a*A
+  dRi = beta_r*f_n*((R - Ri)/R)*N - mu_r*Ri
+  dNi = beta_l*f_l*(Ri/R)*L - (f_n + mu_n)*Ni
+  dAi = f_n*Ni + beta_n*f_n*(N - Ni)*(Ri/R) - mu_a*Ai
+  
+  res=c(dL, dN, dA, dRi, dNi, dAi)
+  list(res)
+}
+
+#r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
+```
+
+testing value of r0 for different rodent population size:
+```{r}
+R=10000 #total number of rodents
+D=50 #total number of deer
+#f_a=p1 #rate at which adult ticks attack deers
+#f_l=p2 #rate at whihc larval ticks attach on rodents
+#f_n=p3 #rate at which nymphal ticks bite rodents
+b=600 #larvae hatching per adult tick-deer interaction
+K=100 #scale of self regulation in tick reproduction
+mu_l=0.7 #larva death rate
+mu_n=0.8 #nymph death rate
+mu_r=0.2 #rodent death rate
+mu_a=1 #adult death rate
+beta_r=0.3 #transmission rate to rodents
+beta_l=0.6 #transmission rate to larval ticks
+beta_n=0.6
+
+##### frequency dependent seeking rate #####
+r_tick_freq = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a) 
+print(r_tick_freq)
+
+# we have f_l, f_n f_a = p1, p2, p3
+p1= 0.1
+p2= 0.1
+p3= 0.5
+
+f_a=p1 #rate at which adult ticks attack deers
+f_l=p2 #rate at whihc larval ticks attach on rodents
+f_n=p3 #rate at which nymphal ticks bite rodents
+
+# to control disease, increase rodent population such that R_0 <= 1
+# need R >= the eq below:
+
+min_rat_pop = (beta_r*beta_l*mu_a/mu_r)*K*(b*p3-(p1 + mu_l)*((mu_n+p2)/p1)*(mu_a/p2))
+#print(c("Minimum rat population size:", min_rat_pop))
+
+A_eq = K*(b*f_a - ((mu_n + f_n)/f_l)* (mu_a/f_n)*(f_l+mu_l))
+L_eq = (mu_n + f_n)/(f_l) * (mu_a/f_n)*A_eq
+N_eq = mu_a/f_n *A_eq
+
+#print(c("A*:", A_eq, "L*:", L_eq, "N*:", N_eq))
+
+R_0 = sqrt((beta_r*beta_l*mu_a*A_eq)/(mu_r*R))
+#print(c("R0:",R_0))
+
+##### density-dependent seeking rate #####
+
+q1=0.0006
+q2=0.0006
+q3=0.002
+  
+f_l = q1*R
+f_n= q2*R
+f_a= q3*D
+
+r_tick_dens = b*q3*D* ((q1*R)/(q1*R + mu_l)) * ((q2*R)/(q2*R + mu_n)) * (1/mu_a)
+print(c("Rtick:",r_tick_dens))
+
+# require D > mu_a/(b*q3)
+
+min_deer_pop = mu_a/(b*q3)
+print(c("Min deer pop:", min_deer_pop))
+
+min_rodent_pop2 = (2*mu_l*(mu_n/(q1*q2)))/(-(mu_l/q1 + mu_n/q2) 
+                                           + sqrt((mu_l/q1 + mu_n/q2)^2 
+                                                  + 4*(mu_l*mu_n)/(q1*q2) * ((b*q3*D)/(mu_a)-1
+                                                                             )
+                                                  )
+                                           )
+                                           
+print(c("Minimum rodent pop:", min_rodent_pop2))
+
+A_eq2 = K*(b*q3 - ((mu_n + f_n)/f_l)* (mu_a/f_n)*(f_l+mu_l))
+L_eq2 = (mu_n + f_n)/(f_l) * (mu_a/f_n)*A_eq
+N_eq2 = mu_a/(f_n) * A_eq
+
+print(c("A*:", A_eq2, "L*:", L_eq2, "N*:", N_eq2))
+
+R_0 = (beta_r*beta_l*mu_a*K)/(mu_r) * 
+  ( (b*q3*D/R) - (mu_a/R)*
+      (1 + 
+         (mu_l/(q1*R))  
+       ) *
+      (1 + 
+         (mu_n/(q2*R))
+       )
+   )
+  
+print(c("R0:",R_0))
+
+```
+
+
+
+```{r}
+times  = seq(0, 10000, by=1)
+
+parms= c(R=10000, #total number of rodents
+  D=50, #total number of deer
+
+  # if you want it density dependent, leave 0.1, 0.5, 0.5; 
+  # if frequency dependent leave p1, p2, p3
+  
+  #f_a=p1, #rate at which adult ticks attack deers
+  #f_l=p2, #rate at whihc larval ticks attach on rodents
+  #f_n=p3, #rate at which nymphal ticks bite rodents
+  f_a= 0.1, #rate at which adult ticks attack deers
+  f_l= 0.5, #rate at whihc larval ticks attach on rodents
+  f_n= 0.5, #rate at which nymphal ticks bite rodents
+
+
+  b=600, #larvae hatching per adult tick-deer interaction
+  K=100, #scale of self regulation in tick reproduction
+  mu_l=0.7, #larva death rate
+  mu_n=0.8, #nymph death rate
+  mu_r=0.2, #rodent death rate
+  mu_a=1, #adult death rate
+  beta_r=0.3, #transmission rate to rodents
+  beta_l=0.6, #transmission rate to larval ticks
+  beta_n=0.6) #transmission rate to nymphal ticks
+  
+start = c(L=27000, N=10000, A=5000, Ri=3086, Ni=3981, Ai=3200) #start at eqiluilibria
+```
+
+```{r}
+out = ode(y = start, times = times, func = mod1, 
+     parms = parms)
+out=as.data.frame(out)
+head(round(out, 3))
+```
+```{r}
+plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 40), ylim = c(-1000,20000))
+ #lines(x = out$time, y = out$L, col = "yellow")
+ lines(x = out$time, y = out$N, col = "red")
+ lines(x = out$time, y = out$A, col = "purple")
+ lines(x = out$time, y = out$Ri, col = "magenta")
+ lines(x = out$time, y = out$Ni, col = "pink")
+ lines(x = out$time, y = out$Ai, col = "orange")
+
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
+
+Those are some cool squiggles!
+
+Let's put some acaricide in the environment now.
+
+```{r}
+mod2=function(t, y, parms){
+  #Pull state variables from y vector
+  L = y[1]
+  N = y[2]
+  A = y[3]
+  Ri = y[4]
+  Ni = y[5]
+  Ai = y[6]
+  #intervention
+  Rp = y[7] 
+  Rs = y[8] #rodents who are not infected and not poisonous
+  
+    #Pull the required parameter values from the parms vector
+  R=parms["R"]
+  D=parms["D"]
+  f_a=parms["f_a"]
+  f_l=parms["f_l"]
+  f_n=parms["f_n"]
+  b=parms["b"]
+  K=parms["K"]
+  mu_l=parms["mu_l"]
+  mu_n=parms["mu_n"]
+  mu_a=parms["mu_a"]
+  mu_r=parms["mu_r"]
+  beta_tr=parms["beta_r"]
+  beta_rt=parms["beta_l"]
+  sigma
+  
+  #intervention
+  nu = parms["nu"] #rate at which rodents acquire bait
+  
+  dL = (b*f_a - 1/K*A)*A 
+          - (f_l + mu_l)*L
+  dN = f_l*L*((Rs)/(Rs + Ri + Rp)) 
+          + (1 - beta_rt)*f_l*L*((Ri)/(Rs + Ri + Rp))
+          - (mu_n + f_n)*N
+  dNi = beta_rt*f_l*((Ri)/(Rs + Ri + Rp))*L 
+          - (f_n + mu_n)*Ni
+  dA = f_n*((Rp)/(Rs + Ri + Rp))*N 
+          - mu_a*A
+  dAi = f_n*(1 - (Rp)/(Rs + Ri + Rp))*Ni 
+          + beta_rt*f_n*(N-Ni)*((Ri)/(Rs + Ri + Rp)) #should it be N-Ni or N?
+          - mu_a*Ai
+  #rodent classes
+  dRs = -beta_tr*sigma*((Ni)/(Rs + Ri + Rp))*Rs 
+        - (nu + mu_r)*Rs
+  dRi = beta_tr*sigma*((Ni)/(Rs + Ri + Rp))*Rs 
+        - (nu + mu_r)*Ri
+  dRp = nu*(Rs + Ri) 
+        - mu_r*Rp
+  
+  res=c(dL, dN, dNi, dA, dAi, dRs, dRi, dRp)
+  list(res)
+}
+
+#r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
+```
+
+```{r}
+times  = seq(0, 10000, by=1)
+
+parms= c(R=10000, #total number of rodents
+  D=50, #total number of deer
+
+  # if you want it density dependent, leave 0.1, 0.5, 0.5; 
+  # if frequency dependent leave p1, p2, p3
+  
+  #f_a=p1, #rate at which adult ticks attack deers
+  #f_l=p2, #rate at whihc larval ticks attach on rodents
+  #f_n=p3, #rate at which nymphal ticks bite rodents
+  f_a= 0.1, #rate at which adult ticks attack deers
+  f_l= 0.5, #rate at whihc larval ticks attach on rodents
+  f_n= 0.5, #rate at which nymphal ticks bite rodents
+
+
+  b=600, #larvae hatching per adult tick-deer interaction
+  K=100, #scale of self regulation in tick reproduction
+  mu_l=0.7, #larva death rate
+  mu_n=0.8, #nymph death rate
+  mu_r=0.2, #rodent death rate
+  mu_a=1, #adult death rate
+  beta_r=0.3, #transmission rate to rodents
+  beta_l=0.6, #transmission rate to larval ticks
+  beta_n=0.6, #transmission rate to nymphal ticks
+  
+  nu = 0.87)
+  
+start = c(L=27000, N=10000, A=5000, Ri=1000, Ni=3981, Ai=3200, Rp= 0, Rs= 2000) #start at equilibria
+```
+
+```{r}
+out = ode(y = start, times = times, func = mod2, 
+     parms = parms)
+out=as.data.frame(out)
+head(round(out, 3))
+```
+```{r}
+plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 40), ylim = c(-1000,200000))
+ #lines(x = out$time, y = out$L, col = "yellow")
+ lines(x = out$time, y = out$N, col = "red")
+ lines(x = out$time, y = out$A, col = "purple")
+ lines(x = out$time, y = out$Ri, col = "magenta")
+ lines(x = out$time, y = out$Ni, col = "pink")
+ lines(x = out$time, y = out$Ai, col = "orange")
+ lines(x = out$time, y = out$Rp, col = "green")
+ lines(x = out$time, y = out$Rs, col = "cornflowerblue")
+
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
+
