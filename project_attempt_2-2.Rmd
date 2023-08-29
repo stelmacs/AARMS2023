@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Following this paper: https://doi.org/10.1016/j.ecocom.2013.11.003
 
+### Model directly from the paper
 ```{r}
 require(deSolve)
 
@@ -198,7 +199,9 @@ plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals",
 
 Those are some cool squiggles!
 
+### Hell yeah let's do it again, attempt #3 - sigma edition
 Let's put some acaricide in the environment now.
+This is attempt #3, revamped version! 
 
 ```{r}
 mod2=function(t, y, parms){
@@ -213,7 +216,7 @@ mod2=function(t, y, parms){
   Rp = y[7] 
   Rs = y[8] #rodents who are not infected and not poisonous
   
-    #Pull the required parameter values from the parms vector
+  #Pull the required parameter values from the parms vector
   R=parms["R"]
   D=parms["D"]
   f_a=parms["f_a"]
@@ -225,9 +228,10 @@ mod2=function(t, y, parms){
   mu_n=parms["mu_n"]
   mu_a=parms["mu_a"]
   mu_r=parms["mu_r"]
-  beta_tr=parms["beta_r"]
-  beta_rt=parms["beta_l"]
-  sigma
+  beta_tr=parms["beta_tr"]
+  beta_rt=parms["beta_rt"]
+  beta_l=parms["beta_l"]
+  sigma = parms["sigma"]
   
   #intervention
   nu = parms["nu"] #rate at which rodents acquire bait
@@ -235,14 +239,18 @@ mod2=function(t, y, parms){
   dL = (b*f_a - 1/K*A)*A 
           - (f_l + mu_l)*L
   dN = f_l*L*((Rs)/(Rs + Ri + Rp)) 
-          + (1 - beta_rt)*f_l*L*((Ri)/(Rs + Ri + Rp))
+          + f_l*L*((Ri)/(Rs + Ri + Rp))
+          - beta_rt*f_l*L*((Ri)/(Rs + Ri + Rp))
+         # - f_n*N*((Rp)/(Rs + Ri + Rp))
           - (mu_n + f_n)*N
   dNi = beta_rt*f_l*((Ri)/(Rs + Ri + Rp))*L 
           - (f_n + mu_n)*Ni
-  dA = f_n*((Rp)/(Rs + Ri + Rp))*N 
+  dA = f_n*((Rs)/(Rs + Ri + Rp))*N 
+          + f_n*N*((Ri)/(Rs + Ri + Rp))
+          - beta_rt*f_n*N*((Ri)/(Rs + Ri + Rp))
           - mu_a*A
   dAi = f_n*(1 - (Rp)/(Rs + Ri + Rp))*Ni 
-          + beta_rt*f_n*(N-Ni)*((Ri)/(Rs + Ri + Rp)) #should it be N-Ni or N?
+          + beta_rt*f_n*(N)*((Ri)/(Rs + Ri + Rp)) 
           - mu_a*Ai
   #rodent classes
   dRs = -beta_tr*sigma*((Ni)/(Rs + Ri + Rp))*Rs 
@@ -256,24 +264,23 @@ mod2=function(t, y, parms){
   list(res)
 }
 
-#r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
 ```
 
 ```{r}
 times  = seq(0, 10000, by=1)
 
-parms= c(R=10000, #total number of rodents
-  D=50, #total number of deer
+parms= c(R=100, #total number of rodents
+  D=5, #total number of deer
 
   # if you want it density dependent, leave 0.1, 0.5, 0.5; 
   # if frequency dependent leave p1, p2, p3
   
-  #f_a=p1, #rate at which adult ticks attack deers
-  #f_l=p2, #rate at whihc larval ticks attach on rodents
-  #f_n=p3, #rate at which nymphal ticks bite rodents
-  f_a= 0.1, #rate at which adult ticks attack deers
-  f_l= 0.5, #rate at whihc larval ticks attach on rodents
-  f_n= 0.5, #rate at which nymphal ticks bite rodents
+  f_a=p1, #rate at which adult ticks attack deers
+  f_l=p2, #rate at whihc larval ticks attach on rodents
+  f_n=p3, #rate at which nymphal ticks bite rodents
+  #f_a= 0.1, #rate at which adult ticks attack deers
+  #f_l= 0.5, #rate at whihc larval ticks attach on rodents
+  #f_n= 0.5, #rate at which nymphal ticks bite rodents
 
 
   b=600, #larvae hatching per adult tick-deer interaction
@@ -282,13 +289,15 @@ parms= c(R=10000, #total number of rodents
   mu_n=0.8, #nymph death rate
   mu_r=0.2, #rodent death rate
   mu_a=1, #adult death rate
-  beta_r=0.3, #transmission rate to rodents
-  beta_l=0.6, #transmission rate to larval ticks
-  beta_n=0.6, #transmission rate to nymphal ticks
+  beta_rt=1, #transmission rat to tick
+  beta_tr=1, #transmission tick to rat
+  beta_l=1, #transmission rate to larval ticks
+  beta_n=1, #transmission rate to nymphal ticks
   
+  sigma = 22, #ticks on rodent per unit time
   nu = 0.87)
   
-start = c(L=27000, N=10000, A=5000, Ri=1000, Ni=3981, Ai=3200, Rp= 0, Rs= 2000) #start at equilibria
+start = c(L=12000, N=530, A=100, Ri=100, Ni=39810, Ai=100, Rp= 10, Rs= 520) #start at equilibria
 ```
 
 ```{r}
@@ -299,7 +308,7 @@ head(round(out, 3))
 ```
 ```{r}
 plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
-      xlab = "Time (days)", type = "l", xlim = c(0, 40), ylim = c(-1000,200000))
+      xlab = "Time (days)", type = "l", xlim = c(0, 40), ylim = c(-10000,20000))
  #lines(x = out$time, y = out$L, col = "yellow")
  lines(x = out$time, y = out$N, col = "red")
  lines(x = out$time, y = out$A, col = "purple")
@@ -309,6 +318,13 @@ plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals",
  lines(x = out$time, y = out$Rp, col = "green")
  lines(x = out$time, y = out$Rs, col = "cornflowerblue")
 
+legend(x = "bottomright",          # Position
+       legend = c("Larvae", "Nymphs", "Adult", "Inf Rats", "Inf Nymps"
+                  , "Inf Adults", "Poison Rats", "Sus Rats"),  # Legend texts
+       #lty = c(1, 2),           # Line types
+       col = c("yellow","red","purple","magenta","pink","orange","green",
+               "cornflowerblue"),           # Line colors
+       lwd = 2) 
 #note that this figure is generated using simple plotting and not ggplot. 
 #ggplot is a great R tool for plotting that you might want to look into. 
 ```
