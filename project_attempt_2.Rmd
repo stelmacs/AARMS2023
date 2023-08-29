@@ -230,23 +230,24 @@ mod2=function(t, y, parms){
   beta_n=parms["beta_n"]
   #intervention
   nu = parms["nu"] #rate at which rodents acquire bait
+  theta = parms["theta"] #rate at which ticks die from eating a rodent with bait?
   
   dL = (b*f_a*(1 - (Rp)/(Rs + Ri + Rp)) - 1/K*A)*A 
-          - (f_l + mu_l)*L
+          - (f_l + mu_l + theta)*L
   dN = f_l*L*((Rs)/(Rs + Ri + Rp)) 
           + (1 - beta_l)*f_l*L*((Ri)/(Rs + Ri + Rp))
-          - (mu_n + f_n)*N
+          - (mu_n + f_n + theta)*N
   dNi = beta_l*f_l*((Ri)/(Rs + Ri + Rp))*L 
-          - (f_n + mu_n)*Ni
+          - (f_n + mu_n + theta)*Ni
   dA = f_n*((Rp)/(Rs + Ri + Rp))*N 
           - mu_a*A
   dAi = f_n*(1 - (Rp)/(Rs + Ri + Rp))*Ni 
-          + beta_n*f_n*(N-Ni)*((Ri)/(Rs + Ri + Rp)) #should it be N-Ni or N?
+          + beta_n*f_n*(N)*((Ri)/(Rs + Ri + Rp)) #should it be N-Ni or N?
           - mu_a*Ai
   #rodent classes
-  dRs = -beta_r*f_n*((Rs)/(Rs + Ri + Rp))*Ni 
+  dRs = -beta_r*f_n*(Ni/Ni+N)
         - (nu + mu_r)*Rs
-  dRi = beta_r*f_n*((Rs)/(Rs + Ri + Rp))*Ni 
+  dRi = beta_r*f_n*(Ni/Ni+N)
         - (nu + mu_r)*Ri
   dRp = nu*(Rs + Ri) 
         - mu_r*Rp
@@ -261,7 +262,7 @@ mod2=function(t, y, parms){
 ```{r}
 times  = seq(0, 10000, by=1)
 
-parms= c(R=10000, #total number of rodents
+parms= c(R=40, #total number of rodents
   D=50, #total number of deer
 
   # if you want it density dependent, leave 0.1, 0.5, 0.5; 
@@ -285,9 +286,11 @@ parms= c(R=10000, #total number of rodents
   beta_l=0.6, #transmission rate to larval ticks
   beta_n=0.6, #transmission rate to nymphal ticks
   
-  nu = 0.87)
+  nu = 0.2,
+  theta = 1)
   
-start = c(L=27000, N=10000, A=5000, Ri=1000, Ni=3981, Ai=3200, Rp= 0, Rs= 2000) #start at equilibria
+start = c( L=27000, N=10000, A=5000, Ni=3981, Ai=3200, 
+          Ri = 0, Rp= 0, Rs= 1000) #start at equilibria
 ```
 
 ```{r}
@@ -296,9 +299,10 @@ out = ode(y = start, times = times, func = mod2,
 out=as.data.frame(out)
 head(round(out, 3))
 ```
+
 ```{r}
 plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
-      xlab = "Time (days)", type = "l", xlim = c(0, 40), ylim = c(-1000,200000))
+      xlab = "Time (days)", type = "l", xlim = c(0, 40), ylim = c(-100000,100000))
  #lines(x = out$time, y = out$L, col = "yellow")
  lines(x = out$time, y = out$N, col = "red")
  lines(x = out$time, y = out$A, col = "purple")
