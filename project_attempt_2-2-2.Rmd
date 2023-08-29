@@ -1,0 +1,145 @@
+---
+title: "lyme project"
+output: html_document
+date: "2023-08-26"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Following this paper: https://doi.org/10.1016/j.ecocom.2013.11.003
+
+### Model directly from the paper
+```{r}
+require(deSolve)
+
+```
+
+Those are some cool squiggles!
+
+### Hell yeah let's do it again, attempt #3 - sigma edition
+Let's put some acaricide in the environment now.
+This is attempt #3, revamped version! 
+
+```{r}
+mod2=function(t, y, parms){
+  #Pull state variables from y vector
+  L = y[1]
+  N = y[2]
+  Ni = y[3]
+  A = y[4]
+  Rs = y[5]
+  #intervention
+  Ri = y[6] 
+  Rp = y[7] #rodents who are not infected and not poisonous
+  
+  #Pull the required parameter values from the parms vector
+  R=parms["R"]
+  D=parms["D"]
+  f_a=parms["f_a"]
+  f_l=parms["f_l"]
+  f_n=parms["f_n"]
+  b=parms["b"]
+  K=parms["K"]
+  mu_l=parms["mu_l"]
+  mu_n=parms["mu_n"]
+  mu_a=parms["mu_a"]
+  mu_r=parms["mu_r"]
+  beta_tr=parms["beta_tr"]
+  beta_rt=parms["beta_rt"]
+  beta_l=parms["beta_l"]
+  sigma = parms["sigma"]
+  
+  #intervention
+  nu = parms["nu"] #rate at which rodents acquire bait
+  
+  dL = (b*f_a - (1/K)*A)*A 
+          - (f_l + mu_l)*L
+  dN = f_l*L*((Rs)/(Rs + Ri + Rp)) 
+          + (1 - beta_rt)*f_l*L*((Ri)/(Rs + Ri + Rp))
+         # - f_n*N*((Rp)/(Rs + Ri + Rp))
+          - (mu_n + f_n)*N
+  dNi = beta_rt*f_l*((Ri)/(Rs + Ri + Rp))*L 
+          - (f_n + mu_n)*Ni
+
+  dA = f_n*(N+Ni)*(1-(Rp/(Rs + Ri + Rp))) - mu_a*A
+
+  #rodent classes
+  dRs = - beta_tr*sigma*((Ni)/(Rs + Ri + Rp))*Rs
+        - nu*Rs -mu_r*Rs #denominator was R we changed to N 
+  dRi = beta_tr*sigma*((Ni)/(Rs + Ri + Rp))*Rs 
+        - nu*Ri - mu_r*Ri
+  dRp = nu*(Rs + Ri) 
+        - mu_r*Rp
+  
+  res=c(dL, dN, dNi, dA, dRs, dRi, dRp)
+  list(res)
+}
+
+```
+
+```{r}
+times  = seq(0, 10000, by=1)
+
+parms= c(R=100, #total number of rodents
+  D=50, #total number of deer
+
+  # if you want it density dependent, leave 0.1, 0.5, 0.5; 
+  # if frequency dependent leave p1, p2, p3
+  
+  f_a=p1, #rate at which adult ticks attack deers
+  f_l=p2, #rate at whihc larval ticks attach on rodents
+  f_n=p3, #rate at which nymphal ticks bite rodents
+  #f_a= 0.3, #rate at which adult ticks attack deers
+  #f_l= 0.1, #rate at whihc larval ticks attach on rodents
+  #f_n= 0.1, #rate at which nymphal ticks bite rodents
+
+
+  b=600, #larvae hatching per adult tick-deer interaction 600
+  K=100, #scale of self regulation in tick reproduction
+  mu_l=0.7, #larva death rate
+  mu_n=0.8, #nymph death rate
+  mu_r=0.2, #rodent death rate
+  mu_a=1, #adult death rate
+  beta_rt=0.6, #transmission rat to tick
+  beta_tr=0.03, #transmission tick to rat
+  beta_l=1, #transmission rate to larval ticks
+  beta_n=1, #transmission rate to nymphal ticks
+  
+  sigma = 40, #ticks on rodent per unit time we had this at 22 but i feel like that isn't true
+  nu = 0.87)
+  
+start = c(L=12000, N=10000, A=300, Ri=30, Ni=254, Rp= 3, Rs= 200) #start at equilibria
+```
+
+```{r}
+out = ode(y = start, times = times, func = mod2, 
+     parms = parms)
+out=as.data.frame(out)
+head(round(out, 3))
+
+out[1:12,]
+```
+```{r}
+plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 40), ylim = c(-1000,20000))
+ #lines(x = out$time, y = out$L, col = "yellow")
+ lines(x = out$time, y = out$N, col = "red")
+ lines(x = out$time, y = out$A, col = "purple")
+ lines(x = out$time, y = out$Ri, col = "magenta")
+ lines(x = out$time, y = out$Ni, col = "pink")
+ lines(x = out$time, y = out$Rp, col = "green")
+ lines(x = out$time, y = out$Rs, col = "cornflowerblue")
+
+legend(x = "bottomright",          # Position
+       legend = c("Larvae", "Nymphs", "Adult", "Inf Rats", "Inf Nymps"
+                  , "Poison Rats", "Sus Rats"),  # Legend texts
+       #lty = c(1, 2),           # Line types
+       col = c("yellow","red","purple","magenta","pink","green",
+               "cornflowerblue"),           # Line colors
+       lwd = 2) 
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
+
