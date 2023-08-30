@@ -1,0 +1,460 @@
+---
+title: "lyme project"
+output: html_document
+date: "2023-08-26"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Following this paper: https://doi.org/10.1016/j.ecocom.2013.11.003
+
+### Model directly from the paper
+```{r}
+require(deSolve)
+
+mod1=function(t, y, parms){
+  #Pull state variables from y vector
+  L = y[1]
+  N = y[2]
+  A = y[3]
+  Ri = y[4]
+  Ni = y[5]
+  Ai = y[6]
+  
+    #Pull the required parameter values from the parms vector
+  R=parms["R"]
+  D=parms["D"]
+  f_a=parms["f_a"]
+  f_l=parms["f_l"]
+  f_n=parms["f_n"]
+  b=parms["b"]
+  K=parms["K"]
+  mu_l=parms["mu_l"]
+  mu_n=parms["mu_n"]
+  mu_a=parms["mu_a"]
+  mu_r=parms["mu_r"]
+  beta_r=parms["beta_r"]
+  beta_l=parms["beta_l"]
+  beta_n=parms["beta_n"]
+  
+  dL = (b*f_a - 1/K*A)*A - (f_l + mu_l)*L
+  dN = f_l*L - (mu_n + f_n)*N
+  dA = f_n*N - mu_a*A
+  dRi = beta_r*f_n*((R - Ri)/R)*N - mu_r*Ri
+  dNi = beta_l*f_l*(Ri/R)*L - (f_n + mu_n)*Ni
+  dAi = f_n*Ni + beta_n*f_n*(N - Ni)*(Ri/R) - mu_a*Ai
+  
+  res=c(dL, dN, dA, dRi, dNi, dAi)
+  list(res)
+}
+
+#r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
+```
+
+testing value of r0 for different rodent population size:
+```{r}
+R=10000 #total number of rodents
+D=50 #total number of deer
+#f_a=p1 #rate at which adult ticks attack deers
+#f_l=p2 #rate at whihc larval ticks attach on rodents
+#f_n=p3 #rate at which nymphal ticks bite rodents
+b=600 #larvae hatching per adult tick-deer interaction
+K=100 #scale of self regulation in tick reproduction
+mu_l=0.7 #larva death rate
+mu_n=0.8 #nymph death rate
+mu_r=0.2 #rodent death rate
+mu_a=1 #adult death rate
+beta_r=0.3 #transmission rate to rodents
+beta_l=0.6 #transmission rate to larval ticks
+beta_n=0.6
+
+##### frequency dependent seeking rate #####
+r_tick_freq = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a) 
+print(r_tick_freq)
+
+# we have f_l, f_n f_a = p1, p2, p3
+p1= 0.1
+p2= 0.1
+p3= 0.5
+
+#f_a=p1 #rate at which adult ticks attack deers
+#f_l=p2 #rate at whihc larval ticks attach on rodents
+#f_n=p3 #rate at which nymphal ticks bite rodents
+
+# to control disease, increase rodent population such that R_0 <= 1
+# need R >= the eq below:
+
+min_rat_pop = (beta_r*beta_l*mu_a/mu_r)*K*(b*p3-(p1 + mu_l)*((mu_n+p2)/p1)*(mu_a/p2))
+#print(c("Minimum rat population size:", min_rat_pop))
+
+A_eq = K*(b*f_a - ((mu_n + f_n)/f_l)* (mu_a/f_n)*(f_l+mu_l))
+L_eq = (mu_n + f_n)/(f_l) * (mu_a/f_n)*A_eq
+N_eq = mu_a/f_n *A_eq
+
+#print(c("A*:", A_eq, "L*:", L_eq, "N*:", N_eq))
+
+R_0 = sqrt((beta_r*beta_l*mu_a*A_eq)/(mu_r*R))
+#print(c("R0:",R_0))
+
+##### density-dependent seeking rate #####
+
+q1=0.0006
+q2=0.0006
+q3=0.002
+  
+f_l = q1*R
+f_n= q2*R
+f_a= q3*D
+
+r_tick_dens = b*q3*D* ((q1*R)/(q1*R + mu_l)) * ((q2*R)/(q2*R + mu_n)) * (1/mu_a)
+print(c("Rtick:",r_tick_dens))
+
+# require D > mu_a/(b*q3)
+
+min_deer_pop = mu_a/(b*q3)
+print(c("Min deer pop:", min_deer_pop))
+
+min_rodent_pop2 = (2*mu_l*(mu_n/(q1*q2)))/(-(mu_l/q1 + mu_n/q2) 
+                                           + sqrt((mu_l/q1 + mu_n/q2)^2 
+                                                  + 4*(mu_l*mu_n)/(q1*q2) * ((b*q3*D)/(mu_a)-1
+                                                                             )
+                                                  )
+                                           )
+                                           
+print(c("Minimum rodent pop:", min_rodent_pop2))
+
+A_eq2 = K*(b*q3 - ((mu_n + f_n)/f_l)* (mu_a/f_n)*(f_l+mu_l))
+L_eq2 = (mu_n + f_n)/(f_l) * (mu_a/f_n)*A_eq
+N_eq2 = mu_a/(f_n) * A_eq
+
+print(c("A*:", A_eq2, "L*:", L_eq2, "N*:", N_eq2))
+
+R_0 = (beta_r*beta_l*mu_a*K)/(mu_r) * 
+  ( (b*q3*D/R) - (mu_a/R)*
+      (1 + 
+         (mu_l/(q1*R))  
+       ) *
+      (1 + 
+         (mu_n/(q2*R))
+       )
+   )
+  
+print(c("R0:",R_0))
+
+```
+
+
+
+```{r}
+times  = seq(0, 10000, by=1)
+
+parms= c(R=10000, #total number of rodents
+  D=50, #total number of deer
+
+  # if you want it density dependent, leave 0.1, 0.5, 0.5; 
+  # if frequency dependent leave p1, p2, p3
+  
+  #f_a=p1, #rate at which adult ticks attack deers
+  #f_l=p2, #rate at whihc larval ticks attach on rodents
+  #f_n=p3, #rate at which nymphal ticks bite rodents
+  f_a= 0.1, #rate at which adult ticks attack deers
+  f_l= 0.5, #rate at whihc larval ticks attach on rodents
+  f_n= 0.5, #rate at which nymphal ticks bite rodents
+
+
+  b=600, #larvae hatching per adult tick-deer interaction
+  K=100, #scale of self regulation in tick reproduction
+  mu_l=0.7, #larva death rate
+  mu_n=0.8, #nymph death rate
+  mu_r=0.2, #rodent death rate
+  mu_a=1, #adult death rate
+  beta_r=0.3, #transmission rate to rodents
+  beta_l=0.6, #transmission rate to larval ticks
+  beta_n=0.6) #transmission rate to nymphal ticks
+  
+start = c(L=27000, N=100, A=5000, Ri=3086, Ni=3981, Ai=3200) #start at eqiluilibria
+```
+
+```{r}
+out = ode(y = start, times = times, func = mod1, 
+     parms = parms)
+out=as.data.frame(out)
+head(round(out, 3))
+```
+```{r}
+plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 150), ylim = c(0,50000))
+ #lines(x = out$time, y = out$L, col = "yellow")
+ lines(x = out$time, y = out$N, col = "red")
+ lines(x = out$time, y = out$A, col = "purple")
+ lines(x = out$time, y = out$Ri, col = "magenta")
+ lines(x = out$time, y = out$Ni, col = "pink")
+ lines(x = out$time, y = out$Ai, col = "orange")
+ 
+legend(x = "topright",          # Position
+       legend = c("Larvae", "Nymphs", "Adult", "Inf Rats", "Inf Nymps"
+                  , "Inf Adults"),  # Legend texts
+       #lty = c(1, 2),           # Line types
+       col = c("yellow","red","purple","magenta","pink","orange"),           # Line colors
+       lwd = 2) 
+
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
+
+Those are some cool squiggles!
+
+### Im gonna try to start from scratch here yolo
+
+```{r}
+require(deSolve)
+
+mod5=function(t, y, parms){
+  #Pull state variables from y vector
+  L = y[1]
+  Ns = y[2]
+  Ni = y[3]
+  A = y[4]
+  Hs = y[5]
+  Hi = y[6]
+  
+  Hr = y[7]
+  
+    #Pull the required parameter values from the parms vector
+  #R=parms["R"]
+  #D=parms["D"]
+  #b_a=parms["f_a"]
+  b_l=parms["f_l"]
+  b_n=parms["f_n"]
+  #b=parms["b"]
+  #K=parms["K"]
+  r=parms["r"]
+  a=parms["r"]
+  delta=parms["delta"]
+  mu_l=parms["mu_l"]
+  mu_n=parms["mu_n"]
+  mu_a=parms["mu_a"]
+  mu_h=parms["mu_h"]
+  beta=parms["beta"]
+  gamma=parms["gamma"]
+  gamma_h=parms["gamma_h"]
+  p_hl=parms["p_hl"]
+  p_nh=parms["p_nh"]
+  #beta_l=parms["beta_l"]
+  #beta_n=parms["beta_n"]
+  #nu = parms["nu"]
+  #birth_r = parms["birth_r"]
+  #mu_p = parms["mu_p"]
+  
+  #c=(1-(1-delta)*(exp(Ni/((1-r)*(Hs+Hi+Hr)))))
+  
+  dL = beta*A*exp(gamma*A) - b_l*L*(1-r) - mu_l*L
+    
+  dNs = b_l*L*(1-r)*(1-a)*(1-(1-(1-delta)*(exp(Ni/((1-r)*(Hs+Hi+Hr))))))*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ns*(1-r) - mu_n*Ns
+    
+  dNi = b_l*L*(1-r)*(1-a)*p_hl*(Hi/(Hs+Hi+Hr)) + b_l*L*(1-r)*(1-a)*(1-(1-delta)*(exp(Ni/((1-r)*(Hs+Hi+Hr)))))*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ni*(1-r) - mu_n*Ni
+    
+  dA = b_n*(Ns+Ni)*(1-r)*(1-a) - mu_a*A
+  
+  dHs = mu_h*(Hs+Hi+Hr) - b_n*p_nh*(1-r)*Ni*(Hs/Hs+Hi+Hr) - mu_h*Hs
+    
+  dHi = b_n*p_nh*(1-r)*Ni*(Hs/Hs+Hi+Hr) - gamma_h*Hi - mu_h*Hi
+    
+  dHr = gamma_h*Hi - mu_h*Hr
+  
+  res=c(dL, dNs, dNi, dA, dHs, dHi, dHr)
+  list(res)
+}
+
+#r_tick = b*f_a*(f_l/(f_l+mu_l))*(f_n/(mu_n+f_n))*(1/mu_a)
+```
+
+```{r}
+times  = seq(0, 1000, by=1)
+
+parms= c(#R=parms["R"]
+  #D=parms["D"]
+  #b_a=parms["f_a"]
+  b_l=0.5,
+  b_n=0.5,
+  #b=parms["b"]
+  #K=parms["K"]
+  r=0.5,
+  a=0.5,
+  delta=0.1,
+  mu_l=0.1,
+  mu_n=0.002,
+  mu_a=0.1,
+  mu_h=0.001,
+  beta=15,
+  gamma=6.2,
+  gamma_h=0.1,
+  p_hl=0.8,
+  p_nh=0.8
+  #beta_l=parms["beta_l"]
+  #beta_n=parms["beta_n"]
+  #nu = parms["nu"]
+  #birth_r = parms["birth_r"]
+  #mu_p = parms["mu_p"]) 
+)
+  
+
+start = c(L=10000, Ns=100, Ni=4000, A=5000, Hs=1000, Hi=2000, Hr=10)
+```
+
+```{r}
+out = ode(y = start, times = times, func = mod5, 
+     parms = parms)
+out=as.data.frame(out)
+head(round(out, 3))
+```
+
+```{r}
+plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 100), ylim = c(-100,50000))
+ #lines(x = out$time, y = out$L, col = "yellow")
+ lines(x = out$time, y = out$N, col = "red")
+ lines(x = out$time, y = out$A, col = "purple")
+ lines(x = out$time, y = out$Ri, col = "magenta")
+ lines(x = out$time, y = out$Ni, col = "pink")
+ lines(x = out$time, y = out$Ai, col = "orange")
+ lines(x = out$time, y = out$Rp, col = "green")
+ lines(x = out$time, y = out$Rs, col = "cornflowerblue")
+
+legend(x = "bottomright",          # Position
+       legend = c("Larvae", "Nymphs", "Adult", "Inf Rats", "Inf Nymps"
+                  , "Inf Adults", "Poison Rats", "Sus Rats"),  # Legend texts
+       #lty = c(1, 2),           # Line types
+       col = c("yellow","red","purple","magenta","pink","orange","green",
+               "cornflowerblue"),           # Line colors
+       lwd = 2) 
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
+
+
+### Hell yeah let's do it again, attempt #4? - sad edition :(
+Let's put some acaricide in the environment now.
+This is getting sad.
+
+```{r}
+mod4=function(t, y, parms){
+  #Pull state variables from y vector
+  L = y[1]
+  N = y[2]
+  A = y[3]
+  Ri = y[4]
+  Ni = y[5]
+  Ai = y[6]
+  #intervention
+  Rp = y[7] 
+  Rs = y[8] #rodents who are not infected and not poisonous
+  
+  #Pull the required parameter values from the parms vector
+  b1 = parms["b1"]
+  b2 = parms["b2"]
+  b3 = parms["b3"]
+  b4 = parms["b4"]
+  b5 = parms["b5"]
+  b6 = parms["b6"]
+  b7 = parms["b7"]
+  b8 = parms["b8"]
+  
+  H1 = parms["H1"]
+  a = parms["a"]
+  st = parms["st"]
+  b = parms["b"]
+  b = parms["b2"]
+  D = parms["D"]
+  a2 = parms["a2"]
+  s2 = parms["s2"]
+  gamma = parms["gamma"]
+  #alpha = parms["alpha"]
+    
+  #intervention
+  #host 1 is deer, host 2 is rats
+  
+  dL = (b5*D*H1 + b6*D*(Rs+Ri+Rp))*(Ai + A)*(a - st*(L+N+A)) 
+        - b*L - b1*H1*L - b2*(Ri+Rs+Rp)*L
+  #not sure if Ni,Li,Ai are subsets or not^
+  
+  dN = b2*D*(Rp + Rs)*L + b1*D*H1*L - b*N - b4*N*(Rs+Ri+Rp) - b3*H1*N
+  
+  dA = b4*D*(Rp + Rs)*N + b3*D*H1*N - b*A - b5*H1*A - b6*(Ri+Rs+Rp)*A
+
+  dRi = b7*Rs*Ni + b8*Rs*Ai - (b2 + gamma + 100)*Ri
+  
+  dNi = b2*D*L*Ri - b*Ni - b4*(Rs+Ri+Rp)*Ni - b3*H1*Ni
+  
+  dAi = b4*D*(Ri+Rs+Rp)*Ni + b4*D*Ri*N + b3*D*H1*Ni - b*Ai - b5*H1*Ai - b6*(Ri+Rs+Rp)*Ai
+    
+  #rodent classes
+  
+  dRp = gamma*Ri - b2*Rp
+  
+  dRs = (a2 - s2*(Ri+Rs+Rp))*(Ri+Rs+Rp) - b2*Rs - b7*Rs*Ni - b8*Rs*Ai
+  
+  
+  res=c(dL, dN, dA, dRi, dNi, dAi, dRp, dRs)
+  list(res)
+}
+
+```
+
+```{r}
+times  = seq(0, 10000, by=1)
+
+parms= c(
+  b1 = 0.0002,
+  b2 = 0.0005,
+  b3 = 0.011,
+  b4 = 0.0005,
+  b5 = 0.001,
+  b6 = 0,
+  b7 = 0.0005,
+  b8 = 0,
+  
+  H1 = 50, #?
+  a = 600,
+  st = 1/1000,
+  b = 1,
+  D = 0.9,
+  a2 = 15,
+  b2 = 3,
+  s2 = 1/100, #?
+  gamma = 5)
+  
+start = c(L= 1000, N = 1000, A = 1000, Ai = 100, Ni = 100, Ri = 100, Rs = 1000, Rp = 100) #start at equilibria
+```
+
+```{r}
+out = ode(y = start, times = times, func = mod4, 
+     parms = parms)
+out=as.data.frame(out)
+head(round(out, 3))
+```
+```{r}
+plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
+      xlab = "Time (days)", type = "l", xlim = c(0, 300), ylim = c(-100,10000))
+ #lines(x = out$time, y = out$L, col = "yellow")
+ lines(x = out$time, y = out$N, col = "red")
+ lines(x = out$time, y = out$A, col = "purple")
+ lines(x = out$time, y = out$Ri, col = "magenta")
+ lines(x = out$time, y = out$Ni, col = "pink")
+ lines(x = out$time, y = out$Ai, col = "orange")
+ lines(x = out$time, y = out$Rp, col = "green")
+ lines(x = out$time, y = out$Rs, col = "cornflowerblue")
+
+legend(x = "bottomright",          # Position
+       legend = c("Larvae", "Nymphs", "Adult", "Inf Rats", "Inf Nymps"
+                  , "Inf Adults", "Poison Rats", "Sus Rats"),  # Legend texts
+       #lty = c(1, 2),           # Line types
+       col = c("yellow","red","purple","magenta","pink","orange","green",
+               "cornflowerblue"),           # Line colors
+       lwd = 2) 
+#note that this figure is generated using simple plotting and not ggplot. 
+#ggplot is a great R tool for plotting that you might want to look into. 
+```
+
