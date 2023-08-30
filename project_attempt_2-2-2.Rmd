@@ -54,11 +54,10 @@ mod2=function(t, y, parms){
   #intervention
   nu = parms["nu"] #rate at which rodents acquire bait
   
-  dL = (b*f_a - (1/K)*A)*A 
+  dL = b*f_a*A - (1/K)*A*A 
           - (f_l + mu_l)*L
   dN = f_l*L*((Rs)/(Rs + Ri + Rp)) 
           + (1 - beta_rt)*f_l*L*((Ri)/(Rs + Ri + Rp))
-         # - f_n*N*((Rp)/(Rs + Ri + Rp))
           - (mu_n + f_n)*N
   dNi = beta_rt*f_l*((Ri)/(Rs + Ri + Rp))*L 
           - (f_n + mu_n)*Ni
@@ -67,11 +66,11 @@ mod2=function(t, y, parms){
 
   #rodent classes
   dRs = - beta_tr*sigma*((Ni)/(Rs + Ri + Rp))*Rs
-        - nu*Rs -mu_r*Rs #denominator was R we changed to N 
+        - nu*Rs #-mu_r*Rs #denominator was R we changed to N 
   dRi = beta_tr*sigma*((Ni)/(Rs + Ri + Rp))*Rs 
-        - nu*Ri - mu_r*Ri
+        - nu*Ri #- mu_r*Ri
   dRp = nu*(Rs + Ri) 
-        - mu_r*Rp
+       # - mu_r*Rp
   
   res=c(dL, dN, dNi, dA, dRs, dRi, dRp)
   list(res)
@@ -110,7 +109,7 @@ parms= c(R=100, #total number of rodents
   sigma = 40, #ticks on rodent per unit time we had this at 22 but i feel like that isn't true
   nu = 0.87)
   
-start = c(L=12000, N=10000, A=300, Ri=30, Ni=254, Rp= 3, Rs= 200) #start at equilibria
+start = c(L=12000, N=10000, A=3000, Ri=30, Ni=3, Rp= 3, Rs= 200) #start at equilibria
 ```
 
 ```{r}
