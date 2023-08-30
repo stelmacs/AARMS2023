@@ -219,19 +219,13 @@ mod5=function(t, y, parms){
   A = y[4]
   Hs = y[5]
   Hi = y[6]
-  
   Hr = y[7]
   
-    #Pull the required parameter values from the parms vector
-  #R=parms["R"]
-  #D=parms["D"]
-  #b_a=parms["f_a"]
-  b_l=parms["f_l"]
-  b_n=parms["f_n"]
-  #b=parms["b"]
-  #K=parms["K"]
+  #Pull the required parameter values from the parms vector
+  b_l=parms["b_l"]
+  b_n=parms["b_n"]
   r=parms["r"]
-  a=parms["r"]
+  a=parms["a"]
   delta=parms["delta"]
   mu_l=parms["mu_l"]
   mu_n=parms["mu_n"]
@@ -242,6 +236,7 @@ mod5=function(t, y, parms){
   gamma_h=parms["gamma_h"]
   p_hl=parms["p_hl"]
   p_nh=parms["p_nh"]
+  p_hn = parms["p_hn"]
   #beta_l=parms["beta_l"]
   #beta_n=parms["beta_n"]
   #nu = parms["nu"]
@@ -250,17 +245,30 @@ mod5=function(t, y, parms){
   
   #c=(1-(1-delta)*(exp(Ni/((1-r)*(Hs+Hi+Hr)))))
   
-  dL = beta*A*exp(gamma*A) - b_l*L*(1-r) - mu_l*L
+  dL = beta*A*exp(-gamma*A) - b_l*L*(1-r) - mu_l*L
     
-  dNs = b_l*L*(1-r)*(1-a)*(1-(1-(1-delta)*(exp(Ni/((1-r)*(Hs+Hi+Hr))))))*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ns*(1-r) - mu_n*Ns
+  dNs = b_l*L*(1-r)*(1-a)*(1- 
+       (1- (1-delta)^((Ni/((1-r)*(Hs+Hi+Hr)
+                          )
+                       )
+                     )
+       )
+    )*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) 
+  - b_n*Ns*(1-r) - mu_n*Ns
     
-  dNi = b_l*L*(1-r)*(1-a)*p_hl*(Hi/(Hs+Hi+Hr)) + b_l*L*(1-r)*(1-a)*(1-(1-delta)*(exp(Ni/((1-r)*(Hs+Hi+Hr)))))*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ni*(1-r) - mu_n*Ni
+  dNi = b_l*L*(1-r)*(1-a)*p_hl*(Hi/(Hs+Hi+Hr)) + b_l*L*(1-r)*(1-a)*( 
+       (1- (1-delta)^((Ni/((1-r)*(Hs+Hi+Hr)
+                          )
+                       )
+                     )
+       )
+    ) *((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ni*(1-r) - mu_n*Ni
     
   dA = b_n*(Ns+Ni)*(1-r)*(1-a) - mu_a*A
   
-  dHs = mu_h*(Hs+Hi+Hr) - b_n*p_nh*(1-r)*Ni*(Hs/Hs+Hi+Hr) - mu_h*Hs
+  dHs = mu_h*(Hs+Hi+Hr) - b_n*p_nh*(1-r)*Ni*(Hs/(Hs+Hi+Hr)) - mu_h*Hs
     
-  dHi = b_n*p_nh*(1-r)*Ni*(Hs/Hs+Hi+Hr) - gamma_h*Hi - mu_h*Hi
+  dHi = b_n*p_nh*(1-r)*Ni*(Hs/(Hs+Hi+Hr)) - gamma_h*Hi - mu_h*Hi
     
   dHr = gamma_h*Hi - mu_h*Hr
   
@@ -272,18 +280,14 @@ mod5=function(t, y, parms){
 ```
 
 ```{r}
-times  = seq(0, 1000, by=1)
+times  = seq(0, 5000, by=1)
 
-parms= c(#R=parms["R"]
-  #D=parms["D"]
-  #b_a=parms["f_a"]
+parms= c(
   b_l=0.5,
   b_n=0.5,
-  #b=parms["b"]
-  #K=parms["K"]
-  r=0.5,
-  a=0.5,
-  delta=0.1,
+  r=0.4,
+  a=0.4,
+  delta=0.5,
   mu_l=0.1,
   mu_n=0.002,
   mu_a=0.1,
@@ -292,16 +296,12 @@ parms= c(#R=parms["R"]
   gamma=6.2,
   gamma_h=0.1,
   p_hl=0.8,
-  p_nh=0.8
-  #beta_l=parms["beta_l"]
-  #beta_n=parms["beta_n"]
-  #nu = parms["nu"]
-  #birth_r = parms["birth_r"]
-  #mu_p = parms["mu_p"]) 
+  p_nh=0.9,
+  p_hn = 0.8
 )
   
 
-start = c(L=10000, Ns=100, Ni=4000, A=5000, Hs=1000, Hi=2000, Hr=10)
+start = c(L=100, Ns=100, Ni=400, A=500, Hs=100, Hi=200, Hr=10)
 ```
 
 ```{r}
@@ -313,145 +313,21 @@ head(round(out, 3))
 
 ```{r}
 plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
-      xlab = "Time (days)", type = "l", xlim = c(0, 100), ylim = c(-100,50000))
+      xlab = "Time (days)", type = "l", xlim = c(0, 1500), ylim = c(-100,600))
  #lines(x = out$time, y = out$L, col = "yellow")
- lines(x = out$time, y = out$N, col = "red")
+ lines(x = out$time, y = out$Ns, col = "red")
  lines(x = out$time, y = out$A, col = "purple")
- lines(x = out$time, y = out$Ri, col = "magenta")
+ lines(x = out$time, y = out$Hi, col = "magenta")
  lines(x = out$time, y = out$Ni, col = "pink")
- lines(x = out$time, y = out$Ai, col = "orange")
- lines(x = out$time, y = out$Rp, col = "green")
- lines(x = out$time, y = out$Rs, col = "cornflowerblue")
+ #lines(x = out$time, y = out$Ai, col = "orange")
+ lines(x = out$time, y = out$Hr, col = "green")
+ lines(x = out$time, y = out$Hs, col = "cornflowerblue")
 
-legend(x = "bottomright",          # Position
+legend(x = "topright",          # Position
        legend = c("Larvae", "Nymphs", "Adult", "Inf Rats", "Inf Nymps"
-                  , "Inf Adults", "Poison Rats", "Sus Rats"),  # Legend texts
+                  , "Poison Rats", "Sus Rats"),  # Legend texts
        #lty = c(1, 2),           # Line types
-       col = c("yellow","red","purple","magenta","pink","orange","green",
-               "cornflowerblue"),           # Line colors
-       lwd = 2) 
-#note that this figure is generated using simple plotting and not ggplot. 
-#ggplot is a great R tool for plotting that you might want to look into. 
-```
-
-
-### Hell yeah let's do it again, attempt #4? - sad edition :(
-Let's put some acaricide in the environment now.
-This is getting sad.
-
-```{r}
-mod4=function(t, y, parms){
-  #Pull state variables from y vector
-  L = y[1]
-  N = y[2]
-  A = y[3]
-  Ri = y[4]
-  Ni = y[5]
-  Ai = y[6]
-  #intervention
-  Rp = y[7] 
-  Rs = y[8] #rodents who are not infected and not poisonous
-  
-  #Pull the required parameter values from the parms vector
-  b1 = parms["b1"]
-  b2 = parms["b2"]
-  b3 = parms["b3"]
-  b4 = parms["b4"]
-  b5 = parms["b5"]
-  b6 = parms["b6"]
-  b7 = parms["b7"]
-  b8 = parms["b8"]
-  
-  H1 = parms["H1"]
-  a = parms["a"]
-  st = parms["st"]
-  b = parms["b"]
-  b = parms["b2"]
-  D = parms["D"]
-  a2 = parms["a2"]
-  s2 = parms["s2"]
-  gamma = parms["gamma"]
-  #alpha = parms["alpha"]
-    
-  #intervention
-  #host 1 is deer, host 2 is rats
-  
-  dL = (b5*D*H1 + b6*D*(Rs+Ri+Rp))*(Ai + A)*(a - st*(L+N+A)) 
-        - b*L - b1*H1*L - b2*(Ri+Rs+Rp)*L
-  #not sure if Ni,Li,Ai are subsets or not^
-  
-  dN = b2*D*(Rp + Rs)*L + b1*D*H1*L - b*N - b4*N*(Rs+Ri+Rp) - b3*H1*N
-  
-  dA = b4*D*(Rp + Rs)*N + b3*D*H1*N - b*A - b5*H1*A - b6*(Ri+Rs+Rp)*A
-
-  dRi = b7*Rs*Ni + b8*Rs*Ai - (b2 + gamma + 100)*Ri
-  
-  dNi = b2*D*L*Ri - b*Ni - b4*(Rs+Ri+Rp)*Ni - b3*H1*Ni
-  
-  dAi = b4*D*(Ri+Rs+Rp)*Ni + b4*D*Ri*N + b3*D*H1*Ni - b*Ai - b5*H1*Ai - b6*(Ri+Rs+Rp)*Ai
-    
-  #rodent classes
-  
-  dRp = gamma*Ri - b2*Rp
-  
-  dRs = (a2 - s2*(Ri+Rs+Rp))*(Ri+Rs+Rp) - b2*Rs - b7*Rs*Ni - b8*Rs*Ai
-  
-  
-  res=c(dL, dN, dA, dRi, dNi, dAi, dRp, dRs)
-  list(res)
-}
-
-```
-
-```{r}
-times  = seq(0, 10000, by=1)
-
-parms= c(
-  b1 = 0.0002,
-  b2 = 0.0005,
-  b3 = 0.011,
-  b4 = 0.0005,
-  b5 = 0.001,
-  b6 = 0,
-  b7 = 0.0005,
-  b8 = 0,
-  
-  H1 = 50, #?
-  a = 600,
-  st = 1/1000,
-  b = 1,
-  D = 0.9,
-  a2 = 15,
-  b2 = 3,
-  s2 = 1/100, #?
-  gamma = 5)
-  
-start = c(L= 1000, N = 1000, A = 1000, Ai = 100, Ni = 100, Ri = 100, Rs = 1000, Rp = 100) #start at equilibria
-```
-
-```{r}
-out = ode(y = start, times = times, func = mod4, 
-     parms = parms)
-out=as.data.frame(out)
-head(round(out, 3))
-```
-```{r}
-plot(x = out$time, y = out$L, col = "yellow", ylab = "Number of individuals", 
-      xlab = "Time (days)", type = "l", xlim = c(0, 300), ylim = c(-100,10000))
- #lines(x = out$time, y = out$L, col = "yellow")
- lines(x = out$time, y = out$N, col = "red")
- lines(x = out$time, y = out$A, col = "purple")
- lines(x = out$time, y = out$Ri, col = "magenta")
- lines(x = out$time, y = out$Ni, col = "pink")
- lines(x = out$time, y = out$Ai, col = "orange")
- lines(x = out$time, y = out$Rp, col = "green")
- lines(x = out$time, y = out$Rs, col = "cornflowerblue")
-
-legend(x = "bottomright",          # Position
-       legend = c("Larvae", "Nymphs", "Adult", "Inf Rats", "Inf Nymps"
-                  , "Inf Adults", "Poison Rats", "Sus Rats"),  # Legend texts
-       #lty = c(1, 2),           # Line types
-       col = c("yellow","red","purple","magenta","pink","orange","green",
+       col = c("yellow","red","purple","magenta","pink","green",
                "cornflowerblue"),           # Line colors
        lwd = 2) 
 #note that this figure is generated using simple plotting and not ggplot. 
