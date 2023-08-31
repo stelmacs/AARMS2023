@@ -25,10 +25,12 @@
 \usepackage{bbm}
 \usepackage{lscape}
 \usepackage{natbib}
+\usepackage{blindtext}
+\usepackage{titlesec}
 
 %%% make comments using the following setup %%
 % type \your name {comment}, 
-% e.g. \sophie{i love lyme disease}
+% e.g. \sophie{i love Lyme disease}
 \newcommand{\bruce}[1]{{\textcolor{blue}{$\langle$BC: #1$\rangle$}}}
 \newcommand{\sophie}[1]{{\textcolor{purple}{$\langle$SS: #1$\rangle$}}}
 \newcommand{\lauren}[1]{{\textcolor{cyan}{$\langle$LF: #1$\rangle$}}}
@@ -38,10 +40,10 @@
 \title{We care about acaricide $<3$}
 
 %%% put in alphabetical order
-\author{\qquad name$^{1,3}$ \qquad\  name$^{1}$ \qquad\  name$^{1,3}$ \\  name$^{2}$ \quad\ Sophie Stelmach$^{1}$}
+\author{\qquad name$^{1,3}$ \qquad\  name$^{1}$ \qquad\  Bruce Chidley$^{2}$ \\  name$^{2}$ \quad\ Sophie Stelmach$^{1}$}
 
 \date{{\small $^1$ Department of Mathematics \& Statistics, McMaster University, Ontario, Canada.\\[-6pt]
-$^2$ add your institution\\[-6pt]
+$^2$ Department of Computing, Queen's University, Ontario, Canada.\\[-6pt]
 $^3$ \\[-6pt]
 }
 }
@@ -50,42 +52,42 @@ $^3$ \\[-6pt]
 
 \begin{document}
 
-% makes title
+
+
 \maketitle
-
-
+{
+\hypersetup{linkcolor = black}
+\tableofcontents
+}
+\newpage
 
 \section{Introduction}
-Lyme disease is a highly emerging vector-borne disease in North America, which is caused by the bacterium \textit{Borrelia} and transmitted via infected bites of black-legged ticks (\textit{Ixodes}) \citep{govcan}. The risk of disease is further propagated by the changes in migratory patterns northward of these ticks by climate change.
-sup bro yo
-\subsection{Tick-host relationships}
-\textbf{\textit{Borrelia}}, particularly B. burgdorferi sensu lato
+Lyme disease (LD) is a highly emerging vector-borne disease in North America, which is caused by the bacterium \textit{Borrelia} and transmitted via infected bites of black-legged ticks (\textit{Ixodes}) \citep{govcan}. The risk of disease is further propagated and has become an increasing concern in Canada due to the changes in migratory patterns northward of these ticks by climate change.
 
-\textbf{Black-legged tick}
-I. scapularis is the primary cause of LD in Eastern North America. I. scapularis is also a vector for many types of pathogens such as Borrelia mayonni, Powassan virus and Anaplasma phaocytophilum \citep{paulson2023multiomics}. This shows that the black-legged tick can also increase the risk for polymicrobial infections besides just Lyme disease. Throughout the tick's life cycle, it encounters multiple hosts (Fig.1). When the eggs hatch, the larvae develop by feeding small mammals and birds. Since the ticks are naive when hatching, they get infected with the borrelia bacteria at this feeding stage, as small mammals and birds are carriers of this bacteria. As the larvae develop into nymphs, they seek new hosts. They can feed on rodents, birds, humans, and other small mammals at this stage. So, infected ticks can potentially feed on humans (terminal hosts) and infect them with B. burgdorferi sensu lato, which can lead to Lyme disease. Small mammals such as dogs and cats are incidental hosts who can also get bitten by infected nymph and potentially carry the ticks into households. Once nymphs develop into adult ticks, they feed, mate and lay eggs on only deer. Deer are an essential host for ticks to breed and propagate. Infected ticks pose the highest risk to humans during the larval and nymph stages as that is where the ticks first encounter the bacteria and can transmit it to humans or incidental hosts around humans. 
+\subsection{Lyme Disease and Tick-host relationships}
+\textbf{\textit{Borrelia}}, such as B. burgdorferi sensu lato, is the pathogenic spirochete that causes Lyme disease in humans via infected black-legged tick bites \citep{CDC_2022}. Typically, the progression of disease in humans post-bite can be divided into three categories: early localized disease, early disseminated disease, and late persistent disease \citep{MyHealth_Alberta}. Once an infected tick bite, the patient will develop a circular red rash, erythema migrans, within one month \citep{borrelia_shapiro}. Once the disease starts disseminating, the patient may develop multiple erythema migrans, flu-like symptoms and cranial nerve palsies. If left untreated for months, patients can transition to the late persistent version of the disease, where they can develop arthritis, encephalitis and polyneuropathy conditions \citep{borrelia_shapiro}. 
 
-\subsection{Biology of Lyme disease}
+Once an individual is suspected of being bitten by an infected tick or shows signs of early Lyme disease, they are usually treated with oral antibiotics, such as doxycycline and amoxicillin, for the course of fourteen to twenty-one days to clear the bacteria \citep{borrelia_shapiro}. A later stage of the disease means that the medication period with this antibiotic will be longer and may be administered intravenously for complete recovery from the disease. 
 
-\textbf{Lyme disease}
-Lyme disease clinical manifestation can be divided into three stages; early localization, early dissemination and late persistence. 
+\textbf{Black-legged tick}, also known as I. scapularis, is the primary cause of LD in Eastern North America. I. scapularis is also a vector for many pathogens such as Borrelia mayonni, Powassan virus and Anaplasma phaocytophilum \citep{paulson2023multiomics}. This shows that the black-legged tick can also increase the risk for polymicrobial infections besides just Lyme disease. To understand the infectious nature of the tick, it is vital to explore its interaction with multiple hosts throughout its life cycle. Throughout the tick's life cycle, it encounters various hosts; see Figure \ref{fig:lifecycle} \citep{CDC_2022}\citep{radolf2012ticks}. When the eggs hatch, the larvae develop by feeding small mammals and birds. Since the ticks are naive when hatching, they get infected with the borrelia bacteria at this feeding stage, as small mammals and birds are carriers of this bacteria. As the larvae develop into nymphs, they seek new hosts. They can feed on rodents, birds, humans, and other small mammals at this stage. So, infected ticks can feed on humans (terminal hosts) and infect them with B. burgdorferi sensu lato, leading to Lyme disease \citep{radolf2012ticks}. Small mammals such as dogs and cats are incidental hosts who can also get bitten by infected nymph and potentially carry the ticks into households. Once nymphs develop into adult ticks, they feed, mate and lay eggs on only deer. Deer are an essential host for ticks to breed and propagate. Infected ticks pose the highest risk to humans during the larval and nymph stages as that is where the ticks first encounter the bacteria and can transmit it to humans or incidental hosts around humans \citep{radolf2012ticks}. 
 
-\textbf{Lyme disease in Canada}
+\textbf{Lyme disease in Canada}.
 A study in eastern and southern Ontario, Canada found \textit{Borrelia} sp in approximately 70 percent of ticks with a relative abundance of 0.01 percent \citep{clow2018microbiota}. Concentration of adult \textit{I. scapularis} carrying endosymbiotic and pathogenic microorganisms in Southeastern Ontario \citep{paulson2023multiomics}. 
 
 
 \subsection{Intervention}
 
-In this study, a mathematical model was developed to evaluate the efficacy of acaricides as a Lyme disease intervention during the tick larval growth stage in Ontario, Canada. The potential for acaricides as an intervention has not been widely researched as of yet, and could prove to be useful as a way to control Lyme disease by killing ticks that feed on rodents. 
+In this study, an existing mathematical model was investigated to evaluate the efficacy of acaricides as a Lyme disease intervention during the tick larval growth stage in Ontario, Canada. The potential for acaricides as an intervention has not been widely researched yet, and could prove useful as a way to control Lyme disease by killing ticks that feed on rodents. 
 
-A study by \citet{dolan2004control} evaluated the efficacy of Fipronil, a rodent-targeted acaricide that is placed in bait boxes that rodents visit. Bait boxes such as the ones used in the study by \citet{dolan2004control} are commercially available, and the authors found that the lowest conentration of Fipronil required to kill tick nymps was 20 $\mu l$. To maintain a regular rate of visiting rodents, the box baits were placed ~10m apart from each other along a rodent path, and was rebaited and replenished with Fipronil every four weeks. In total, \citet{dolan2004control} report a 89\% reduction in the number of ticks per mouse, and a 53\% decrease in infection rate of ticks present on mice. After their 3 year experiment, only 33\% of adult ticks were infected with Lyme disease in sites with the bait boxes, compared to 47\% on sites without the bait boxes. The other advantage to these bait boxes is that many different tick hosts can visit a box and be treated with the acaricide and that there has been minimal environmental impact detected \citep{dolan2004control}. 
+A study by \citet{dolan2004control} evaluated the efficacy of Fipronil, a rodent-targeted acaricide that is placed in bait boxes that rodents visit. Bait boxes such as the ones used in the study by \citet{dolan2004control} are commercially available, and the authors found that the lowest concentration of Fipronil required to kill tick nymphs was 20 $\mu l$. To maintain a regular rate of visiting rodents, the box baits were placed $\sim$10m apart from each other along a rodent path and re-baited and replenished with Fipronil every four weeks. In total, \citet{dolan2004control} report an 89\% reduction in the number of ticks per mouse and a 53\% decrease in the infection rate of ticks present on mice. After their three-year experiment, only 33\% of adult ticks were infected with Lyme disease in sites with the bait boxes, compared to 47\% on sites without the bait boxes. The other advantage to these bait boxes is that many different tick hosts can visit a box and be treated with the acaricide and that minimal environmental impact has been detected \citep{dolan2004control}. 
 
-It is clear that there is a potential for using bait boxes with acaricide treatment as an intervention for preventing Lyme disease at the host level. In this paper, we will evaluate the effect of rodents visiting bait boxes and how the tick populations respond to the intervention.
+There is a potential for using bait boxes with acaricide treatment to prevent Lyme disease at the host level. This paper will evaluate the effect of rodents visiting bait boxes and how the tick populations respond to the intervention.
 
 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale = 0.15]{figures/Tick life cycle and progression of lyme disease.png}
+    \includegraphics[scale = 0.15]{figures/Tick life cycle and progression of Lyme disease.png}
     \caption{Diagram of tick life cycle and host bias.}
     \label{fig:lifecycle}
 \end{figure}
@@ -93,98 +95,192 @@ It is clear that there is a potential for using bait boxes with acaricide treatm
 \section{Methods}
 
 \subsection{Proposed model}
-The model proposed by \citet{lou2014tick} describes the tick life cycle and disease transmission between the tick and its hosts. The model features compartments that represent the various stages of the tick life cycle, including healthy ticks and infected ticks. We will base our analysis on this model, adding an intervention to prevent Lyme disease spread.
+The model proposed by \citet{tosato2021host} describes the tick life cycle and disease transmission between the tick and its host and will serve as our base model. The model features compartments that represent the various stages of the tick life cycle: larval ($L$), nymphal ($N$), and adult ($A$). Here, only the nymphal ticks are classified as uninfected/susceptible ($N_S$) or infected ($N_I$). The total rodent population ($H$) is stratified based on status in disease progression: susceptible ($H_S$), infected ($H_I$), or immune ($H_R$).
 
-Ticks feed on their hosts in the larval, nymph, and adult stages of the life cycle, but primarily pose a risk to humans in the nymphal and adult phases. During the larval and nymphal stages, ticks will feel on small rodents, at which point they risk acquiring Lyme disease-causing bacteria \sophie{cite}. Larvae, nymphs and adults feed on their hosts at different rates, which is reflected in our model. 
+This model considers ticks' birth and death rates, the rates at which they feed on rodents in their respective stages of life, and their slightly varying Lyme disease transmission rates. While ticks feed on their hosts in any life cycle stage, they primarily pose a risk to humans in the nymphal and adult stages. Similarly, ticks will only feed on small rodents during the larval and nymphal stages, at which point these rodents risk acquiring Lyme disease-causing bacteria \citep{borrelia_shapiro}. Thus, tick compartments in the model that deal with disease transmission are only applied to the nymphal stage.
 
-This basic system, modelling a generic tick population along with tick and rodent infection rates, served as a basis for later outlined intervention method.
+The model considers two main methods of Lyme disease transmission. In the direct or systemic transmission, (). On the other hand, co-feeding or non-systemic transmission occurs between an infected tick and an uninfected tick that feed onto the same rodent in close proximity \citep{voordouw2015co}. 
 
-(system of diff equations)
 
-This model, referring to values and parameters listed in \citet{lou2014tick}, takes into account the birth and death rates of ticks along with the rates at which they feed on feed on rodents in their respective stages of life. In this basic model, the total rodent population was treated as a constant value, and only the infectious rodents were incorporated.
+%describe what co-feeding is
 
-\subsection{Rodent bait intervention}
+Successful tick-tick disease transmission from co-feeding depends on the number of infected nymphs in a given time, and is described by the co-feeding transmission probability $c$: 
 
-to do: add new parameters to table (maybe a separate table?), make a table with our compartments and definitions, explain assumptions
 
-\geneva{for now let's say S = susceptible, I = infected, P = poisonous}
-\sophie{s could stand for seeking? as in seeking bait?}
+The dynamical system from \citet{tosato2021host} is as follows:
+\begin{align*}
+    \frac{dL(t)}{dt} &= \beta \,A \, e^{-\gamma A} - b_L \,L (1-r) - \mu_L \,L \\
+    \frac{dN_S(t)}{dt} &= b_L\,L(1-r)(1-a)(1-c) \, \frac{[H_s + (1- p_{HL})H_I + H_R]}{H} - b_n\,N_S (1-r) \\ 
+    \frac{dN_I(t)}{dt} &= b_L \,L(1-r) (1-a) p_{HL} \frac{H_I}{H} + b_L \,L(1-r)(1-a)\,\frac{c \,[H_s + (1- p_{HL})H_I + H_R]}{H} \\
+    &- b_N\, N_I (1-r) - \mu_N \,N_I\\
+    \frac{dA(t)}{dt} &= b_N \,(N_S + N_I) (1-r) (1-a) - \mu_A \,A \\
+    \frac{dH_s(t)}{dt} &= \mu_H \,H - b_N p_{NH}(1-r) \,N_I \frac{H_S}{H} - \mu_H \, H_S\\
+    \frac{dH_I(t)}{dt} &= b_N p_{NH} (1-r)\, N_I \,\frac{H_S}{H} - \mu_H \, H_S \\
+    \frac{dH_R(t)}{dt} &= \gamma_H \, H_I - \mu_H \, H_R
+\end{align*}
+where $H = H_S(t) + H_I(t) + H_R(t)$ is constant, and $\displaystyle c = 1 - (1-\delta)^{\frac{N_I}{(1-r)H}}$. Descriptions of state variables are found in Table \ref{table:vars}, while parameter values used in simulations are found in Table \ref{table:params}.
 
-Let's suppose $\theta$ is the death rate of ticks as a result of feeding on a rodent who has been treated with acaricide. For now we can assume this is 100\%?
-
-Tick classes:
-\begin{align}
-    \frac{dL(t)}{dt} &= \left(b \,F_A - \frac{1}{K} A(t)\right)A(t) - (F_L + \mu_L) \,L(t) \\
-    \frac{dN_S(t)}{dt} &= F_L\frac{R_S(t)}{R_S(t) + R_I(t) + R_P(t)}\,L(t) + (1-\beta_L)\,F_L \,L(t) \frac{R_I(t)}{R_S(t) + R_I(t) + R_P(t)} - (F_N + \mu_N) \,N_S(t) \\
-    \frac{dN_I(t)}{dt} &= \beta_L F_L \,L(t) \frac{R_I(t)}{R_S(t) + R_I(t) + R_P(t)} - (F_N + \mu_N) \,N_I(t) \\
-    \frac{dA_S(t)}{dt} &= F_N\frac{R_S(t)}{R_S(t) + R_I(t) + R_P(t)}\,N_S(t) - \mu_A \,A_S(t) \\
-    \frac{dA_I(t)}{dt} &= F_N\left(1-\frac{R_P(t)}{R_S(t) + R_I(t) + R_P(t)}\right)\,N_I(t) + \beta_N \,F_N \,N_S(t) \, \frac{R_I(t)}{R_S(t) + R_I(t) + R_P(t)} - \mu_A \,A_I(t)
-\end{align}
-
-Rodent classes: \geneva{fix me later}
-\begin{align}
-    % \frac{dR_S(t)}{dt} &= -\beta_R F_N \,\frac{R_S(t)}{R_S(t) + R_I(t) + R_P(t)} \,N_I - (\nu + \mu_R) R_S(t) \\
-    \frac{dR_S(t)}{dt} &= -\beta_R \, \sigma \,R_S(t) \frac{N_I(t)}{R_S(t) + R_I(t) + R_P(t)} - (\nu + \mu_R) R_S(t) \\
-    % \frac{dR_I(t)}{dt} &= \beta_R F_N \,\frac{R_S(t)}{R_S(t) + R_I(t) + R_P(t)} \,N_I(t) - (\nu + \mu_R) R_I(t) \\
-    \frac{dR_I(t)}{dt} &= \beta_R \,\sigma \,R_S(t) \frac{N_I(t)}{R_S(t) + R_I(t) + R_P(t)} - (\nu + \mu_R) R_I(t) \\
-    \frac{dR_P(t)}{dt} &= \nu (R_S(t) + R_I(t)) - \mu_R R_P(t)
-\end{align}
-
-\subsection{Model assumptions}
-- assumptions
-- dynamics?
-
-Similarly to \citet{lou2014tick}, we assume that adult ticks feed only on deer, and that larvae and nymph ticks feed on rodents. We will assume that these are the only tick hosts in the environment.
-
-Furthermore, in the intervention model, we assume that there are only three compartments for rodents: susceptible/seeking, infectious, and poisonous. Susceptible rodents can become infectious or poisonous, and infectious rodents can become poisonous, however the opposite is not true. This is because once a rodent is poisonous, they cannot transmit disease to ticks because we assume all ticks feeding on poisonous rodents will die. Thus, the poison is said to have 100\% efficacy and no waning. Infectious rodents will remain infectious until they take the bait and become poisonous. All rodents die with the same mortality rate.
-
-\geneva{Extended model assumptions: 100\% efficacy and no waning immunity/half-life, infected rodents stay infected forever unless they take the bait (``neutralise" the infection)}
 \begin{center}
 \begin{table}[h!]
 \footnotesize
 \noindent\makebox[\textwidth]{
  \begin{tabular}{||l l||} 
  \hline
- Parameter & Description \\ [0.5ex] 
+ Variable & Description\\ [0.5ex] 
  \hline\hline
- $R$ & Total number of rodents\\ 
- $D$ & Total number of the deer\\
- $F_L$ & Rate at which larval ticks attach on rodents. This is a function of R\\
- $F_N$ & Rate at which nymphal ticks bite rodents. This is a function of R\\ 
- $F_A$ & Rate at which adult ticks attack deer. This is a function of D\\
- $b$ & Larvae hatching per adult tick–deer interaction in the absence
-of tick self-regulation\\
- $1/K$ & Scale of self-regulation in tick reproduction\\
- $\mu_L$ & Death rate for larval ticks\\
- $\mu_N$ & Death rate for nymphal ticks\\ 
- $\mu_R$ & Death rate for rodents\\
- $\mu_A$ & Death rate for adult ticks\\
- $\beta_L$ & Transmission coefficient of spirochete infection to rodents\\
- $\beta_N$ & Transmission coefficient of spirochete infection to larval ticks\\
- $\beta_A$ & Transmission coefficient of spirochete infection to nymphal ticks\\[1ex] 
+ $L(t)$ & Total number of larval ticks as a function of time\\ 
+ $N_S(t)$ & Number of uninfected nymphal ticks as a function of time\\
+ $N_I(t)$ & Number of infected nymphal ticks as a function of time\\ 
+ $A(t)$ & Total number of adult ticks as a function of time\\
+ $H_S(t)$ & Number of susceptible rodents as a function of time\\ 
+ $H_I(t)$ & Number of infected rodents as a function of time\\
+ $H_R(t)$ & Number of immune rodents as a function of time\\
  \hline
  \end{tabular}
  }
+\caption{State variables in the model and their meanings.}
+\label{table:vars}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table}[h!]
+\footnotesize
+\noindent\makebox[\textwidth]{
+ \begin{tabular}{||l l l||} 
+ \hline
+ Parameter & Description & Value \\ [0.5ex] 
+ \hline\hline
+ $H$ & Total number of rodents & \\ 
+ $\beta_L$ & Rate at which larval ticks attach on rodents & 0.5\\
+ $\beta_N$ & Rate at which nymphal ticks bite rodents & 0.5\\ 
+ $\beta$ & Maximum birth rate for larvae & 15\\
+ $\gamma$ & Intensity of density-dependence in birth rate of larvae & 0.00005\\
+ $\mu_L$ & Death rate for larval ticks & 0.01\\
+ $\mu_N$ & Death rate for nymphal ticks & 0.002\\ 
+ $\mu_A$ & Death rate for adult ticks & 0.1\\
+ $\mu_R$ & Death rate for rodents & 0.001\\
+ $p_{NH}$ & Probability of systemic infection from nymph to host & 0.9\\
+ $p_{HL}$ & Probability of systemic infection from hosts to larvae & 0.8\\
+ $p_{HN}$ & Probability of systemic infection from hosts to nymphs & 0.8\\
+ $\gamma_H$ & Recovery rate of hosts & 0.1\\
+ $c$ & Probability of non-systemic transmission (co-feeding) & $[0,1)$\\
+ $\delta$ & Probability of being co-fed to a single infected nymph & 0.7\\
+ $r$ & Proportion of hosts assuming effective repellent insecticide & $[0,1)$\\
+ $a$ & Proportion of hosts assuming effective non-repellent insecticide (acaricide) & $[0,1)$\\ 
+ \hline
+ \end{tabular}
+ }
+\caption{Parameters in the model and values used in simulations. \citep{tosato2021host}}
+\label{table:params}
 \end{table}
 \end{center}
 
 
+
+\subsection{Model assumptions}
+%Similarly to \citet{lou2014tick}, we assume that adult ticks feed only on deer, and that larvae and nymph ticks feed on rodents. We will assume that these are the only tick hosts in the environment.
+
+In the above model with intervention proposed by \cite{tosato2021host}, it was assumed that there are only three rodent disease compartments: susceptible, infectious, and immune. Despite having natural mortality for each compartment, every dead rodent is replaced by a new susceptible rodent, keeping the population constant in time (i.e. $H = H_S(t) + H_I(t) + H_R(t)$). Moreover, complete immunity with no potential for waning was assumed for all rodents treated with either acaricide or repellent; infected ticks will immediately die upon contact with these rodents.
+
+
+\subsection{Uncertainty Analysis}
+Many of our model's parameters were uncertain due to a lack of available data. Therefore, we performed Latin Hypercube Sampling to generate a set of 1000 random parameter values based on their distributions, which were then run through our model to understand better how these relationships may act out in a practical setting. All parameters were taken to have a normal distribution with a relatively small standard deviation, as there is little relevant experimental data to support other possible distributions. 
+
+
 \section{Results}
 
+\subsection{Base Model}
+First, we analyzed the tick and host populations at rest to determine the equilibrium state and understand quantitatively the effects introducing our acaracide solution would have. Setting the populations to be $L=$ 5000, $N_S=$ 2000, $N_I=$ 1000, $A=$ 500, $H_S=$ 400, $H_I=$ 1000, and $H_R=$ 100, we see that equilibrium is reached when $L=$ 17 887, $N_S=$ 2695, $N_I=$ 17 816, $A=$ 102 553, $H_S=$ 0, $H_I=$ 15, and $H_R=$ 1485. Figure 2 shows the system reaching equilibrium. The graph was split into two sections due to the large difference between resting values of some compartments.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.15]{figures/base_large.png}
+    \caption{Diagram of tick life cycle and host bias.}
+    \label{fig:base_large}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.15]{figures/base_small.png}
+    \caption{Diagram of tick life cycle and host bias.}
+    \label{fig:base_small}
+\end{figure}
+
+\subsection{Rodent Bait Intervention}
+Our model showed two equilibrium outcomes: one where Lyme disease is eradicated in the tick population and one supporting endemic Lyme disease. Assuming a consistent birth rate, this varies primarily on the delta value ($\delta$), per the equilibrium analysis performed in \cite{tosato2021host}. However, it is essential to note that the tick population itself does not die out and will remain susceptible to Lyme disease should it be reintroduced into the system without proper acaracide use. Figure 3 represents the case where Lyme disease is eradicated, and figure 4 represents the case where an endemic equilibrium is reached. Both are shown on a 120 day time scale, and assume that the host population is 80\% saturated with acaracide.
+
+(figure 3)
+
+(figure 4)
+
+We see from figure 3 that the population of infected nymphs and rodents both reach 0 around 50 days in, meaning Lyme disease is no longer in circulation. 
+
+In figure 4, an endemic equilibrium is reached with the population of infected nymphs and adult ticks resting at around 71 073 combined (34 132 infected nymphs, and 36 941 adults), which is around 50 000 less than in the case where no acaracides were used (120 369, with 17 816 infected nymphs and 102 553 adults).
+
+\subsection{Uncertainty Analysis}
+The uncertainty analysis for parameters pertaining to our acaricide intervention model for parameters resulting in the eradication of Lyme disease produced the following results over a 120-day period, corresponding to roughly four months.
+
+(graph)
+
+Then, we did a similar analysis for the case where the acaricide intervention method results in an endemic equilibrium. The difference between these two scenarios is a matter of differing parameter values.
+
+(graph)
+
+The maximum and minimum values for all 1000 parameter sets were displayed for each compartment. From this, assuming the parameter distributions were chosen reasonably, we can conclude that with a setting mirroring ours, most real-world tick populations will lie within the ranges shown in our two graphs. Given that the variance of each parameter was quite low and that this still resulted in quite a wide range in some cases, it can be said that the parameters are relatively sensitive to change. Note that these values may vary drastically depending on the distribution method of the acaricide solution, along with factors such as temperature, season, and species population and diversity.
 
 \section{Discussion}
 
-- we only looked at rodents as hosts of lyme disease, but there are many other small animals eg chipmunks that act as hosts. they could also be treated with acaricide 
-- the boxes dont require a lot of maintenance, only every 3-4 weeks do the boxes need to be replenished with bait and treatment
-- need to be placed in early may in areas where hosts reside, in quantities relative to the density of hosts in that region
+- we only looked at rodents as hosts of Lyme disease, but many other small animals, e.g., chipmunks, act as hosts. They could also be treated with acaricide 
+- The boxes don't require a lot of maintenance; only every 3-4 weeks do the boxes need to be replenished with bait and treatment
+- need to May placed in early may in areas where hosts reside, in quantities relative to the density of hosts in that region
 
 
 \subsection{Model Implications}
 
+
+
 \subsection{Effect on Policy Decisions}
+Interventions around Lyme disease can be introduced at various levels, such as host-level, tick-level and human-level. For example, current public health recommendations are to take physical precautions when entering areas with ticks, such as wearing bug repellent and light-coloured clothes to spot ticks \citep{govcan}. Most commonly, public health decisions around Lyme disease are made at a human level, such as physical prevention, vaccination, and immediate antibiotics. However, it is essential to consider host or tick-level interventions as effective public health measures. Lyme disease is a vector-borne disease where prevalence depends on host and tick interactions. \sophie{i think the next few sentences need to be fixed for flow and stuff - ill do this later}For example, studies show that the density of ticks and ticks with Borrelia are correlated with deer populations in that area \citep{kilpatrick2014relationship}. So, by controlling the deer population, the abundance of ticks and the prevalence of Lyme disease can be significantly reduced. There was an eighty percent reduction of resident-reported Lyme disease cases when the density of deer was reduced as adult ticks rely on deer as hosts to breed and propagate \citep{kilpatrick2014relationship}.  
+
+Rodents are also a critical host when controlling tick abundance and, consequently, Lyme disease, as most ticks get infected with Borrelia when feeding on these rodents during their larval and nymph stages (see Figure \ref{fig:lifecycle}) \citep{radolf2012ticks}. The model used in this paper demonstrates that using acaricides on rodents via bait boxes can reduce the abundance of larvae and nymphs in a specific location. Public health and environmental health are connected through a One Health lens, and interventions introduced at an ecological level can influence the prevalence of vector-borne diseases. When fewer ticks are present, humans have a lower chance of interacting with them and consequently becoming infected with Lyme disease. 
+
+When exploring public health policies, it is important to consider the impacts of the interventions on social determinants of health, health economics and the healthcare system. In this study, the introduction of acaricides as an intervention for Lyme disease is effective, sustainable and can be cost-effective compared to other interventions. 
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[]
+\centering
+\caption{Comparison of acaricides against other Lyme disease interventions. }
+\label{tab:my-table}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|p{1.5in}|p{1.5in}|p{1.5in}|p{1.5in}|p{1.5in}|}
+\hline
+\textbf{Interventions} & \textbf{Acaricides} & \textbf{Vaccination} & \textbf{Personal protective measures} & \textbf{Landscaping} \\ \hline
+\textbf{Target host}                           & Rodents & Humans & Humans & Deers \\ \hline
+\textbf{Geographic range of protection}        & input   & input  & input  & input \\ \hline
+\textbf{Extent of protection (Time)}           & input   & input  & input  & input \\ \hline
+\textbf{Lag time from first use to protection} & input   & input  & input  & input \\ \hline
+\textbf{Impact on tick population (abundance)} & Yes     & No     & No     & Yes   \\ \hline
+\textbf{Social determinants of health}         & input   & input  & input  & input \\ \hline
+\textbf{Cost-effectiveness}                    & input   & input  & input  & input \\ \hline
+\textbf{Impact on healthcare system}           & input   & input  & input  & input \\ \hline
+\textbf{Environmental sustainability}          & input   & input  & input  & input \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+
 
 \subsection{Future Studies}
+
+
+
+some points  make (just brain dumping)
+- what information does this model provide for policy makers
+- how is it useful
+- what are the tradeoffs for using this intervention vs another one (can we quantify this in terms of cost, effectiveness etc???)
+
 
 
 \section{Conclusion}
