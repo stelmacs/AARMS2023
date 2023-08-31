@@ -1,7 +1,7 @@
-Title: Uncertainty Analysis
+Title: Rodent Bait Intervention to Control the Tick Population
 Authors: Bruce Chidley, Sophie Stelmach, Lauren Farrell, Thaneswary Rajanderan, Geneva Liwag
 
-This R Markdown file goes through uncertainty analysis for the model created in the main file. Similar in structure, but parameters are varied according to their distributions.
+Uncertainty analysis for the model created in the main file. It is similar in structure, but parameters are varied according to their distributions.
 ```{r}
 require(deSolve)
 
@@ -32,10 +32,13 @@ mod5=function(t, y, parms){
   p_nh=parms["p_nh"]
   p_hn = parms["p_hn"]
   
+  #Calculation of c value for reference
   #c=(1-(1-delta)*(exp(Ni/((1-r)*(Hs+Hi+Hr)))))
   
+  #Larval ticks
   dL = beta*A*exp(-gamma*A) - b_l*L*(1-r) - mu_l*L
     
+  #Nymphal ticks susceptible to Lyme disease
   dNs = b_l*L*(1-r)*(1-a)*(1- 
        (1- (1-delta)^((Ni/((1-r)*(Hs+Hi+Hr)
                           )
@@ -45,6 +48,7 @@ mod5=function(t, y, parms){
     )*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) 
   - b_n*Ns*(1-r) - mu_n*Ns
     
+  #Nymphal ticks infected with Lyme disease
   dNi = b_l*L*(1-r)*(1-a)*p_hl*(Hi/(Hs+Hi+Hr)) + b_l*L*(1-r)*(1-a)*( 
        (1- (1-delta)^((Ni/((1-r)*(Hs+Hi+Hr)
                           )
@@ -53,14 +57,19 @@ mod5=function(t, y, parms){
        )
     ) *((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ni*(1-r) - mu_n*Ni
     
+  #Adult ticks
   dA = b_n*(Ns+Ni)*(1-r)*(1-a) - mu_a*A
   
+  #Hosts susceptible to Lyme disease
   dHs = mu_h*(Hs+Hi+Hr) - b_n*p_nh*(1-r)*Ni*(Hs/(Hs+Hi+Hr)) - mu_h*Hs
     
+  #Hosts infected with Lyme disease
   dHi = b_n*p_nh*(1-r)*Ni*(Hs/(Hs+Hi+Hr)) - gamma_h*Hi - mu_h*Hi
     
+  #Hosts recovered from Lyme disease
   dHr = gamma_h*Hi - mu_h*Hr
   
+  #Return values
   res=c(dL, dNs, dNi, dA, dHs, dHi, dHr)
   list(res)
 }
@@ -152,7 +161,7 @@ head(out)
 Max and Min values are plotted, showing an approximate range that values may lie in if parameter values vary
 ```{r}
 plot(x = out$time, y = stat_matrix$min_L, col = "black", ylab = "Number of individuals", 
-      xlab = "Time (days)", type = "l", xlim = c(0, 120), ylim = c(0,200000))
+      xlab = "Time (days)", type = "l", xlim = c(0, 120), ylim = c(0,50000))
  lines(x = out$time, y = stat_matrix$min_Ns, col = "red")
  lines(x = out$time, y = stat_matrix$min_A, col = "purple")
  lines(x = out$time, y = stat_matrix$min_Hi, col = "magenta")

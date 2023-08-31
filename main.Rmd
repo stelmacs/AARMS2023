@@ -1,7 +1,7 @@
 Title: Rodent Bait Intervention to Control the Tick Population
 Authors: Bruce Chidley, Sophie Stelmach, Lauren Farrell, Thaneswary Rajanderan, Geneva Liwag
 
-This R Markdown file simulates the growth and stabilization of a population of ticks infected with Lyme disease, and how introducing acaracide bait solutions affects this population. 
+This R Markdown file simulates the growth and stabilization of a population of ticks infected with Lyme disease, and how introducing acaracide bait solutions affects this population.
 
 ```{r}
 require(deSolve)
@@ -40,10 +40,23 @@ mod5=function(t, y, parms){
   dL = beta*A*exp(-gamma*A) - b_l*L*(1-r) - mu_l*L
     
   #Nymphal ticks susceptible to Lyme disease
-  dNs = b_l*L*(1-r)*(1-a)*(1- (1- (1-delta)^((Ni/((1-r)*(Hs+Hi+Hr))))))*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ns*(1-r) - mu_n*Ns
-  
-  #Nymphal ticks infected with Lyme disease  
-  dNi = b_l*L*(1-r)*(1-a)*p_hl*(Hi/(Hs+Hi+Hr)) + b_l*L*(1-r)*(1-a)*((1- (1-delta)^((Ni/((1-r)*(Hs+Hi+Hr))))))*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ni*(1-r) - mu_n*Ni
+  dNs = b_l*L*(1-r)*(1-a)*(1- 
+       (1- (1-delta)^((Ni/((1-r)*(Hs+Hi+Hr)
+                          )
+                       )
+                     )
+       )
+    )*((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) 
+  - b_n*Ns*(1-r) - mu_n*Ns
+    
+  #Nymphal ticks infected with Lyme disease
+  dNi = b_l*L*(1-r)*(1-a)*p_hl*(Hi/(Hs+Hi+Hr)) + b_l*L*(1-r)*(1-a)*( 
+       (1- (1-delta)^((Ni/((1-r)*(Hs+Hi+Hr)
+                          )
+                       )
+                     )
+       )
+    ) *((Hs + (1-p_hl)*Hi + Hr)/(Hs+Hi+Hr)) - b_n*Ni*(1-r) - mu_n*Ni
     
   #Adult ticks
   dA = b_n*(Ns+Ni)*(1-r)*(1-a) - mu_a*A
@@ -54,7 +67,7 @@ mod5=function(t, y, parms){
   #Hosts infected with Lyme disease
   dHi = b_n*p_nh*(1-r)*Ni*(Hs/(Hs+Hi+Hr)) - gamma_h*Hi - mu_h*Hi
     
-  #Hosts recovered from Lyme disease
+  #Hosts Recovered from Lyme disease
   dHr = gamma_h*Hi - mu_h*Hr
   
   #Return values
@@ -67,7 +80,7 @@ mod5=function(t, y, parms){
 
 Parameters are set such that the population reaches equilibrium (and such that the ODE solver will run properly)
 ```{r}
-times  = seq(0, 120, by=1)
+times  = seq(0, 10000, by=1)
 
 parms= c(
   b_l=0.5,
@@ -114,5 +127,4 @@ plot(x = out$time, y = out$L, col = "black", ylab = "Number of individuals",
  lines(x = out$time, y = out$Hs, col = "cornflowerblue")
  
  tail(out)
-
 ```
