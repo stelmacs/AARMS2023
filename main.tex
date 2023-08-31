@@ -104,7 +104,7 @@ The model considers two main methods of Lyme disease transmission. In the direct
 
 %describe what co-feeding is
 
-Successful tick-tick disease transmission from co-feeding depends on the number of infected nymphs in a given time, and is described by the co-feeding transmission probability $c$: 
+Successful tick-tick disease transmission from co-feeding depends on the number of infected nymphs in a given time, and is described by the co-feeding transmission probability $c$: \sophie{add equation of c}
 
 
 The dynamical system from \citet{tosato2021host} is as follows:
@@ -191,41 +191,58 @@ Many of our model's parameters were uncertain due to a lack of available data. T
 \section{Results}
 
 \subsection{Base Model}
-First, we analyzed the tick and host populations at rest to determine the equilibrium state and understand quantitatively the effects introducing our acaracide solution would have. Setting the populations to be $L=$ 5000, $N_S=$ 2000, $N_I=$ 1000, $A=$ 500, $H_S=$ 400, $H_I=$ 1000, and $H_R=$ 100, we see that equilibrium is reached when $L=$ 17 887, $N_S=$ 2695, $N_I=$ 17 816, $A=$ 102 553, $H_S=$ 0, $H_I=$ 15, and $H_R=$ 1485. Figure 2 shows the system reaching equilibrium. The graph was split into two sections due to the large difference between resting values of some compartments.
+First, we analyzed the tick and host populations at rest to determine the equilibrium state and understand quantitatively the effects introducing our acaricide solution would have. Setting the populations to be $L=$ 5000, $N_S=$ 2000, $N_I=$ 1000, $A=$ 500, $H_S=$ 400, $H_I=$ 1000, and $H_R=$ 100, we see that equilibrium is reached when $L=$ 17 887, $N_S=$ 2695, $N_I=$ 17 816, $A=$ 102 553, $H_S=$ 0, $H_I=$ 15, and $H_R=$ 1485. Figure \ref{fig:base_model} shows the system reaching equilibrium. The graph was split into two sections due to the large difference between resting values of some compartments.
 
-\begin{figure}[h]
+\begin{figure}[h!]
+\begin{subfigure}{\textwidth}
     \centering
-    \includegraphics[scale = 0.15]{figures/base_large.png}
-    \caption{Diagram of tick life cycle and host bias.}
-    \label{fig:base_large}
-\end{figure}
-
-\begin{figure}[h]
+    \includegraphics[scale = 0.4]{figures/base_large.png}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
     \centering
-    \includegraphics[scale = 0.15]{figures/base_small.png}
-    \caption{Diagram of tick life cycle and host bias.}
-    \label{fig:base_small}
+    \includegraphics[scale = 0.4]{figures/base_small.png}
+\end{subfigure}
+\caption{Population dynamics of ticks and hosts}
+\label{fig:base_model}
 \end{figure}
 
 \subsection{Rodent Bait Intervention}
-Our model showed two equilibrium outcomes: one where Lyme disease is eradicated in the tick population and one supporting endemic Lyme disease. Assuming a consistent birth rate, this varies primarily on the delta value ($\delta$), per the equilibrium analysis performed in \cite{tosato2021host}. However, it is essential to note that the tick population itself does not die out and will remain susceptible to Lyme disease should it be reintroduced into the system without proper acaracide use. Figure 3 represents the case where Lyme disease is eradicated, and figure 4 represents the case where an endemic equilibrium is reached. Both are shown on a 120 day time scale, and assume that the host population is 80\% saturated with acaracide.
+Our model showed two equilibrium outcomes: one where Lyme disease is eradicated in the tick population and one supporting endemic Lyme disease. Assuming a consistent birth rate, this varies primarily on the delta value ($\delta$), per the equilibrium analysis performed in \cite{tosato2021host}. However, it is essential to note that the tick population itself does not die out and will remain susceptible to Lyme disease should it be reintroduced into the system without proper acaracide use. Figure \ref{fig:eradicated}, shown on a smaller population scale for ease of interpretation, represents the case where Lyme disease is eradicated, and figure \ref{fig:endemic} represents the case where an endemic equilibrium is reached. Both are shown on a 120 day time scale, and assume that the host population is 80\% saturated with acaracide.
 
-(figure 3)
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.4]{figures/intervention_eradicated.png}
+    \caption{Lyme disease is eradicated when the value of $\delta$ is 0.1}
+    \label{fig:eradicated}
+\end{figure}
 
-(figure 4)
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.4]{figures/intervention_endemic.png}
+    \caption{Lyme disease remains endemic when the value of $\delta$ is 0.7}
+    \label{fig:endemic}
+\end{figure}
 
-We see from figure 3 that the population of infected nymphs and rodents both reach 0 around 50 days in, meaning Lyme disease is no longer in circulation. 
+We see from figure \ref{fig:eradicated} that the population of infected nymphs and hosts both reach 0 around 60 days in, meaning Lyme disease is no longer in circulation. 
 
-In figure 4, an endemic equilibrium is reached with the population of infected nymphs and adult ticks resting at around 71 073 combined (34 132 infected nymphs, and 36 941 adults), which is around 50 000 less than in the case where no acaracides were used (120 369, with 17 816 infected nymphs and 102 553 adults).
+In figure \ref{fig:endemic}, an endemic equilibrium is reached with the population of infected nymphs and adult ticks resting at around 71 073 combined (34 132 infected nymphs, and 36 941 adults), which is around 50 000 less than in the case where no acaracides were used (120 369, with 17 816 infected nymphs and 102 553 adults).
 
 \subsection{Uncertainty Analysis}
-The uncertainty analysis for parameters pertaining to our acaricide intervention model for parameters resulting in the eradication of Lyme disease produced the following results over a 120-day period, corresponding to roughly four months.
+The uncertainty analysis for parameters pertaining to our acaricide intervention model for parameters resulting in the eradication of Lyme disease produced the following results in figure \ref{fig:un_eradicated} over a 120-day period, corresponding to roughly four months. We also did a similar analysis shown in figure \ref{fig:un_endemic} for the case where the acaricide intervention method results in an endemic equilibrium. The difference between these two scenarios is a matter of differing parameter values (most importantly, $\delta$).
 
-(graph)
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.4]{figures/uncertainty_eradicated.png}
+    \caption{Uncertainty in population dynamics when $\delta$ is set such that Lyme disease will be eradicated and parameters are varied according to their assumed distributions}
+    \label{fig:un_eradicated}
+\end{figure}
 
-Then, we did a similar analysis for the case where the acaricide intervention method results in an endemic equilibrium. The difference between these two scenarios is a matter of differing parameter values.
-
-(graph)
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.4]{figures/uncertainty_endemic.png}
+    \caption{Uncertainty in population dynamics when $\delta$ is set such that Lyme disease will remain endemic and parameters are varied according to their assumed distributions}
+    \label{fig:un_endemic}
+\end{figure}
 
 The maximum and minimum values for all 1000 parameter sets were displayed for each compartment. From this, assuming the parameter distributions were chosen reasonably, we can conclude that with a setting mirroring ours, most real-world tick populations will lie within the ranges shown in our two graphs. Given that the variance of each parameter was quite low and that this still resulted in quite a wide range in some cases, it can be said that the parameters are relatively sensitive to change. Note that these values may vary drastically depending on the distribution method of the acaricide solution, along with factors such as temperature, season, and species population and diversity.
 
